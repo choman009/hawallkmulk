@@ -47,3 +47,7 @@ Bundled Noto Kufi Arabic locally for Kurdish headings/navigation/actions, paired
 
 A configured Supabase app incorrectly displayed sessionError on the first visit because startup treated AuthSessionMissingError as a failed authenticated operation. Added an explicit startup-only allowSignedOut option that returns no workspace for a missing session. Login, periodic refresh and actual authentication failures retain existing error behavior. Regression observed RED then GREEN; full suite 20/20 and production build passed. Independent focused review found no issues. Local browser using dummy public configuration showed the login form without the error banner; no real credentials or database were used.
 
+## Office logo and home-screen app branding
+
+Replaced the placeholder brand symbol with the user-supplied gold office logo, including desktop/mobile login, sidebar and loading state. Artwork crops/resizes preserve the original design. Added browser PNG icon, Apple touch icon, 192/512 Android icons, padded maskable icon and standalone web manifest. All page/application/Apple/manifest names are exactly `Hawall mulk`. Production build passed; browser verified image loads, metadata links/title, standalone manifest and a visible mobile login logo at 390px with no horizontal overflow. Independent focused review found no actionable issues. Existing installed shortcuts may need to be removed and re-added after deployment to refresh cached branding.
+

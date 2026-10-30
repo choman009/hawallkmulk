@@ -97,6 +97,12 @@ No Supabase project or Vercel deployment was created automatically; account acce
 
 ## Project map
 
+### Office branding and mobile home screen
+
+The supplied office logo is used in the workspace and login screen. Browser title, application name, Apple web-app title, and manifest name/short name are all `Hawall mulk`. Android icons include 192px/512px variants and a separately padded maskable icon; Apple uses a 180px touch icon. The manifest opens the home-screen app in standalone mode.
+
+After deploying a branding update, remove an existing old home-screen shortcut and add the site again if the device still shows the old title/icon. Generated assets can be refreshed from `public/brand/logo-original.jpg` with `node scripts/prepare-brand.mjs`; the script only crops/resizes the provided artwork.
+
 - `src/components`: workspace shell, forms, details, assignments, team/settings and authentication.
 - `src/lib`: domain rules, bilingual dictionary, phone links, matching, demo/repository and Supabase clients.
 - `src/app/api/team`: server-only verified administrator invitations.

@@ -354,9 +354,21 @@ button {
   width: 39px;
   height: 39px;
   border-radius: 12px;
-  background: #242822;
-  color: #e1ef92;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  overflow: hidden;
   flex-shrink: 0;
+}
+.brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.office-icon img {
+  border-radius: 5px;
+}
+.auth-mobile-brand {
+  display: none;
 }
 .brand-light {
   font-weight: 500;
@@ -1829,54 +1841,19 @@ dialog::backdrop {
   font-size: var(--text-xs, 10px);
   color: var(--muted);
 }
-.auth-architecture {
-  position: relative;
-  height: 240px;
-  margin-top: 45px;
+.auth-office-logo {
   display: flex;
-  align-items: flex-end;
   justify-content: center;
-  gap: 8px;
-  border-bottom: 1px solid #89986a55;
+  margin-top: 32px;
 }
-.auth-architecture > div {
-  width: 75px;
-  height: 155px;
-  border: 1px solid #89986a55;
-  background:
-    linear-gradient(
-      90deg,
-      transparent 46%,
-      #89986a33 46%,
-      #89986a33 48%,
-      transparent 48%
-    ),
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 24px,
-      #89986a22 25px
-    );
-  transform: skewY(-12deg);
-}
-.auth-architecture > div:nth-child(2) {
-  height: 230px;
-  width: 90px;
-  background-color: #89986a15;
-}
-.auth-architecture > div:nth-child(3) {
-  height: 190px;
-  width: 75px;
-}
-.auth-architecture > span {
-  font-family: "Manrope", sans-serif;
-  font-size: 70px;
-  position: absolute;
-  bottom: 0;
-  inset-inline-end: 10px;
-  color: #71834766;
-  letter-spacing: -5px;
-  font-weight: 800;
+.auth-office-logo img {
+  display: block;
+  width: 220px;
+  max-width: 100%;
+  height: auto;
+  padding: 20px;
+  border-radius: 18px;
+  background: #ffffff;
 }
 .auth-error {
   position: fixed;
@@ -2376,6 +2353,20 @@ dialog::backdrop {
   gap: 10px;
   align-items: center;
   color: inherit;
+}
+@media (max-width: 760px) {
+  .auth-mobile-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+    font-family: "Manrope", sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .auth-form .auth-lock {
+    display: none;
+  }
 }
 
 /* Sorani needs its own readable scale and uncompressed Arabic letterforms. */

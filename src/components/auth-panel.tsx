@@ -1,15 +1,9 @@
 "use client";
 import { useState, type FormEvent } from "react";
-import {
-  ArrowUpRight,
-  Building2,
-  LockKeyhole,
-  Sun,
-  Moon,
-  Languages,
-} from "lucide-react";
+import { ArrowUpRight, LockKeyhole, Sun, Moon, Languages } from "lucide-react";
 import { getBrowserClient } from "@/lib/supabase/client";
 import type { TextKey } from "@/lib/i18n";
+import { BrandLogo } from "./brand-logo";
 export function AuthPanel({
   t,
   onLogin,
@@ -80,9 +74,7 @@ export function AuthPanel({
     <div className="auth-page">
       <aside className="auth-story">
         <div className="brand">
-          <span className="brand-mark">
-            <Building2 size={24} />
-          </span>
+          <BrandLogo />
           <span dir="ltr">
             Hawall<span className="brand-light"> mulk</span>
           </span>
@@ -91,11 +83,13 @@ export function AuthPanel({
           <span className="eyebrow">HAWALL MULK / WORKSPACE</span>
           <h1>{t("loginTitle")}</h1>
           <p>{t("overviewSub")}</p>
-          <div className="auth-architecture">
-            <div />
-            <div />
-            <div />
-            <span>HM.</span>
+          <div className="auth-office-logo">
+            <img
+              src="/brand/logo-lockup.png"
+              alt="Hawall mulk"
+              width={240}
+              height={251}
+            />
           </div>
         </div>
         <small>Hawall mulk © {new Date().getFullYear()}</small>
@@ -118,6 +112,10 @@ export function AuthPanel({
           </button>
         </div>
         <div className="auth-form">
+          <div className="auth-mobile-brand">
+            <BrandLogo />
+            <span dir="ltr">Hawall mulk</span>
+          </div>
           <span className="auth-lock">
             <LockKeyhole size={26} />
           </span>

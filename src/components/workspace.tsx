@@ -58,6 +58,7 @@ import {
   DEMO_KEY,
 } from "@/lib/repository";
 import { ContactActions } from "./contact-actions";
+import { BrandLogo } from "./brand-logo";
 import { Modal } from "./modal";
 import { RecordForm } from "./record-form";
 import { RecordDetail } from "./record-detail";
@@ -273,9 +274,7 @@ export default function Workspace({
   if (loading)
     return (
       <div className="loading-page">
-        <span className="brand-mark">
-          <Building2 size={26} />
-        </span>
+        <BrandLogo />
         <span className="loading-bar" />
         <p>Hawall mulk</p>
       </div>
@@ -561,9 +560,7 @@ export default function Workspace({
               navigate("dashboard");
             }}
           >
-            <span className="brand-mark">
-              <Building2 size={23} />
-            </span>
+            <BrandLogo />
             <span dir="ltr">
               Hawall<span className="brand-light"> mulk</span>
             </span>
@@ -582,7 +579,7 @@ export default function Workspace({
         </div>
         <div className="office-chip">
           <span className="office-icon">
-            <Building2 size={18} />
+            <img src="/brand/logo-mark.png" width={28} height={28} alt="" />
           </span>
           <div>
             <strong>{data.office_settings.name}</strong>
