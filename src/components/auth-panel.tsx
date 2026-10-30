@@ -85,7 +85,7 @@ export function AuthPanel({
           <p>{t("overviewSub")}</p>
           <div className="auth-office-logo">
             <img
-              src="/brand/logo-lockup.png"
+              src="/brand/logo-login-transparent.png"
               alt="Hawall mulk"
               width={240}
               height={251}

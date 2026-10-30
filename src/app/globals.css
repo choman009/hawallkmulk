@@ -1852,8 +1852,7 @@ dialog::backdrop {
   max-width: 100%;
   height: auto;
   padding: 20px;
-  border-radius: 18px;
-  background: #ffffff;
+  background: transparent;
 }
 .auth-error {
   position: fixed;
