@@ -8,6 +8,51 @@ import {
 } from "../src/lib/domain.ts";
 import { matchingProperties } from "../src/lib/matching.ts";
 
+test("properties and partner offices accept a blank second phone but reject invalid filled numbers", () => {
+  const property = {
+    title: "House",
+    type: "house",
+    purpose: "sale",
+    city: "Erbil",
+    currency: "USD",
+    phone: "07501234567",
+  };
+  const office = { name: "Office", phone: "07501234567" };
+  for (const [table, record] of [
+    ["properties", property],
+    ["partner_offices", office],
+  ] as const) {
+    for (const phone_secondary of [
+      undefined,
+      null,
+      "",
+      "  ",
+      "07701234567",
+      "٠٧٧٠١٢٣٤٥٦٧",
+      "+447700900123",
+    ]) {
+      assert.deepEqual(
+        validateRecord(table, { ...record, phone_secondary }),
+        [],
+      );
+    }
+    for (const phone_secondary of ["123", "bad", "javascript:alert(1)"]) {
+      assert.ok(
+        validateRecord(table, { ...record, phone_secondary }).includes(
+          "phone_secondary",
+        ),
+      );
+    }
+    assert.ok(
+      validateRecord(table, {
+        ...record,
+        phone: "",
+        phone_secondary: "07701234567",
+      }).includes("phone"),
+    );
+  }
+});
+
 test("phone actions normalize Iraqi local and Kurdish digits", () => {
   assert.equal(normalizePhone("٠٧٥٠ ١٢٣ ٤٥٦٧"), "+9647501234567");
   assert.equal(normalizePhone("۰۷۷۰۱۲۳۴۵۶۷"), "+9647701234567");

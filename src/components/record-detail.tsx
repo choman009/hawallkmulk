@@ -101,6 +101,7 @@ export function RecordDetail({
         address: sourceOffice.address,
         contact: sourceOffice.contact_name,
         phone: sourceOffice.phone,
+        secondaryPhone: sourceOffice.phone_secondary,
       }
     : projection?.office_name
       ? {
@@ -108,6 +109,7 @@ export function RecordDetail({
           address: projection.office_address,
           contact: projection.office_contact,
           phone: projection.office_phone,
+          secondaryPhone: projection.office_phone_secondary,
         }
       : null;
   const matches = request ? matchingProperties(request, data.properties) : [];
@@ -238,8 +240,20 @@ export function RecordDetail({
           <span className="phone-text" dir="ltr">
             {record.phone}
           </span>
+          {(property?.phone_secondary ?? office?.phone_secondary) && (
+            <div>
+              <small className="muted">{t("phone_secondary")}</small>
+              <p className="phone-text" dir="ltr">
+                {property?.phone_secondary ?? office?.phone_secondary}
+              </p>
+            </div>
+          )}
         </div>
-        <ContactActions phone={record.phone} t={t} />
+        <ContactActions
+          phone={record.phone}
+          secondaryPhone={property?.phone_secondary ?? office?.phone_secondary}
+          t={t}
+        />
       </section>
       {!office && (
         <div className="info-grid">
@@ -266,7 +280,18 @@ export function RecordDetail({
             </span>
           </div>
           {officeContact.phone && (
-            <ContactActions phone={officeContact.phone} t={t} />
+            <div>
+              {officeContact.secondaryPhone && (
+                <p className="phone-text" dir="ltr">
+                  {officeContact.secondaryPhone}
+                </p>
+              )}
+              <ContactActions
+                phone={officeContact.phone}
+                secondaryPhone={officeContact.secondaryPhone}
+                t={t}
+              />
+            </div>
           )}
         </section>
       )}

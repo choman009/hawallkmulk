@@ -1045,6 +1045,11 @@ td > small {
   background: var(--blue);
   color: #648e9b;
 }
+.contact-actions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 .contact-actions {
   display: flex;
   align-items: center;
@@ -1322,7 +1327,7 @@ td > small {
   align-items: center;
   gap: 4px;
 }
-.property-card-footer > .contact-actions {
+.property-card-footer > .contact-actions-list {
   margin-inline-start: auto;
 }
 .property-card-footer .contact-button {
@@ -1724,7 +1729,7 @@ dialog::backdrop {
   font-size: var(--text-sm, 11px);
   margin: 20px 0;
 }
-.member-card > .contact-actions {
+.member-card > .contact-actions-list {
   margin-bottom: 15px;
 }
 .check-label {

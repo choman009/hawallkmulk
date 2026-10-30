@@ -28,6 +28,7 @@ export type Property = {
   status: string;
   contact_name: string;
   phone: string;
+  phone_secondary?: string | null;
   source_contributor_id: string | null;
   source_office_id: string | null;
   created_by: string;
@@ -62,6 +63,7 @@ export type PartnerOffice = {
   address: string;
   contact_name: string;
   phone: string;
+  phone_secondary?: string | null;
   notes: string;
   created_at: string;
 };
@@ -104,6 +106,7 @@ export type RecordSource = {
   office_address: string | null;
   office_contact: string | null;
   office_phone: string | null;
+  office_phone_secondary?: string | null;
 };
 export type WorkspaceData = {
   profiles: Profile[];
@@ -176,6 +179,10 @@ export function validateRecord(
   )
     errors.push("required");
   if (!normalizePhone(String(data.phone ?? ""))) errors.push("phone");
+  if (table !== "client_requests") {
+    const secondary = String(data.phone_secondary ?? "").trim();
+    if (secondary && !normalizePhone(secondary)) errors.push("phone_secondary");
+  }
   if (table !== "partner_offices") {
     if (!String(data.city ?? "").trim()) errors.push("city");
     if (data.currency !== "USD" && data.currency !== "IQD")

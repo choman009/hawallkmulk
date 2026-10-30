@@ -50,6 +50,7 @@ export function RecordForm({
     { key: "bedrooms", type: "number" },
     { key: "contact_name", required: true },
     { key: "phone", type: "tel", required: true },
+    { key: "phone_secondary", type: "tel" },
     { key: "description", type: "textarea", wide: true },
   ];
   const requestFields: Field[] = [
@@ -86,6 +87,7 @@ export function RecordForm({
     { key: "name", required: true, wide: true },
     { key: "contact_name", required: true },
     { key: "phone", type: "tel", required: true },
+    { key: "phone_secondary", type: "tel" },
     { key: "address", wide: true },
     { key: "notes", type: "textarea", wide: true },
   ];
@@ -138,6 +140,14 @@ export function RecordForm({
             : value;
     }
     values.phone = normalizePhone(String(values.phone)) ?? String(values.phone);
+    if (table !== "client_requests") {
+      const secondary = String(values.phone_secondary ?? "").trim();
+      if (secondary)
+        values.phone_secondary = normalizePhone(secondary) ?? secondary;
+      else if (initial?.phone_secondary) values.phone_secondary = null;
+      // Omit a never-set blank value so one-phone saves still work during rollout.
+      else delete values.phone_secondary;
+    }
     if (table !== "partner_offices") {
       if (!initial) {
         values.created_by = profile.id;
@@ -168,6 +178,9 @@ export function RecordForm({
           <label key={f.key} className={f.wide ? "wide" : ""}>
             <span>
               {t(f.key as TextKey)}{" "}
+              {f.key === "phone_secondary" && (
+                <small className="muted">({t("optional")})</small>
+              )}
               {f.required && <span className="required">*</span>}
             </span>
             {f.options ? (

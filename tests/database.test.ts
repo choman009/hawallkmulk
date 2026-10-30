@@ -39,6 +39,15 @@ test("PostgreSQL migration enforces own/assigned scope, progress, revocation, pr
    insert into public.client_requests(id,client_name,phone,kind,type,city,source_contributor_id,created_by) values('${ids.r1}','Client','+9647501234567','buy','house','Erbil','${ids.other}','${ids.owner}');
    insert into public.assignments(id,property_id,assignee_id,kind,assigned_by) values('${ids.a1}','${ids.p2}','${ids.free}','sell','${ids.owner}');
    insert into storage.objects(bucket_id,name) values('property-images','${ids.p2}/photo.jpg');`);
+    const secondaryMigration = await readFile(
+      new URL(
+        "../supabase/migrations/202610310001_secondary_phones.sql",
+        import.meta.url,
+      ),
+      "utf8",
+    );
+    await db.exec(secondaryMigration);
+    await db.exec(secondaryMigration); // Safe to reapply without deleting existing records.
     async function asUser<T>(id: string, sql: string) {
       await db.exec(
         `begin;set local role authenticated;select set_config('request.jwt.claim.sub','${id}',true);`,
@@ -49,6 +58,68 @@ test("PostgreSQL migration enforces own/assigned scope, progress, revocation, pr
         await db.exec("rollback");
       }
     }
+    await t.test(
+      "optional secondary phones persist, clear and reject invalid values without replacing the primary",
+      async () => {
+        const original = await asUser<{
+          phone: string;
+          phone_secondary: string | null;
+        }>(
+          ids.owner,
+          `select phone,phone_secondary from public.properties where id='${ids.p1}'`,
+        );
+        assert.equal(original.rows[0].phone_secondary, null);
+        const saved = await asUser<{
+          phone: string;
+          phone_secondary: string | null;
+        }>(
+          ids.free,
+          `update public.properties set phone_secondary='+9647701234567' where id='${ids.p1}' returning phone,phone_secondary`,
+        );
+        assert.equal(saved.rows[0].phone, original.rows[0].phone);
+        assert.equal(saved.rows[0].phone_secondary, "+9647701234567");
+        assert.equal(
+          (
+            await asUser<{ phone_secondary: string | null }>(
+              ids.free,
+              `update public.properties set phone_secondary=null where id='${ids.p1}' returning phone_secondary`,
+            )
+          ).rows[0].phone_secondary,
+          null,
+        );
+        await assert.rejects(() =>
+          asUser(
+            ids.free,
+            `update public.properties set phone_secondary='bad' where id='${ids.p1}'`,
+          ),
+        );
+        assert.equal(
+          (
+            await asUser(
+              ids.free,
+              `update public.properties set phone_secondary='+9647701234567' where id='${ids.p2}' returning phone_secondary`,
+            )
+          ).rows.length,
+          0,
+        );
+        for (const second of ["null", "'+9647701234567'"]) {
+          const result = await asUser<{ phone_secondary: string | null }>(
+            ids.owner,
+            `insert into public.partner_offices(name,phone,phone_secondary) values('Two phones','+9647501234567',${second}) returning phone_secondary`,
+          );
+          assert.equal(
+            result.rows[0].phone_secondary,
+            second === "null" ? null : "+9647701234567",
+          );
+        }
+        await assert.rejects(() =>
+          asUser(
+            ids.owner,
+            `insert into public.partner_offices(name,phone,phone_secondary) values('Invalid','+9647501234567','bad')`,
+          ),
+        );
+      },
+    );
     await t.test(
       "own and assigned properties readable; unrelated requests/partners hidden",
       async () => {
@@ -346,17 +417,20 @@ test("PostgreSQL migration enforces own/assigned scope, progress, revocation, pr
     await t.test(
       "source projection exposes only contacts for accessible records, never directory notes",
       async () => {
-        await db.exec(`insert into public.partner_offices(id,name,phone,notes) values('30000000-0000-4000-8000-000000000001','Visible office','+9647501234567','Private directory note'),('30000000-0000-4000-8000-000000000002','Hidden office','+9647501234568','Hidden');
+        await db.exec(`insert into public.partner_offices(id,name,phone,phone_secondary,notes) values('30000000-0000-4000-8000-000000000001','Visible office','+9647501234567','+9647701234567','Private directory note'),('30000000-0000-4000-8000-000000000002','Hidden office','+9647501234568','+9647701234568','Hidden');
     update public.properties set source_office_id='30000000-0000-4000-8000-000000000001' where id='${ids.p1}';
     update public.properties set source_office_id='30000000-0000-4000-8000-000000000002' where id='${ids.p2}';`);
         const result = await asUser<{
           record_id: string;
           office_name: string;
+          office_phone_secondary: string | null;
           contributor_name: string;
         }>(ids.free, "select * from public.visible_record_sources()");
         assert.equal(result.rows.length, 1);
         assert.equal(result.rows[0].record_id, ids.p1);
         assert.equal(result.rows[0].office_name, "Visible office");
+        assert.equal(result.rows[0].office_phone_secondary, "+9647701234567");
+        assert.ok(!JSON.stringify(result.rows).includes("+9647701234568"));
         assert.ok(
           !JSON.stringify(result.rows).includes("Private directory note"),
         );

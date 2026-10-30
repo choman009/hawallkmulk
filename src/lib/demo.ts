@@ -134,6 +134,7 @@ export function initialDemo(): WorkspaceData {
     description: "تۆمارێکی خەیاڵی بۆ تاقیکردنەوەی سیستەمەکە.",
     contact_name: ["ڕێباز", "ئاڤان", "کاروان", "ژیار", "هەردی", "ئاوات"][i],
     phone: `+964750000001${i}`,
+    phone_secondary: i === 0 ? "+9647700000010" : null,
   }));
   const client_requests = [
     {
@@ -217,6 +218,7 @@ export function initialDemo(): WorkspaceData {
         address: "هەولێر، عەنکاوە",
         contact_name: "ڕۆژگار",
         phone: "+9647500000031",
+        phone_secondary: "+9647700000031",
         notes: "تۆماری خەیاڵی",
         created_at: now,
       },

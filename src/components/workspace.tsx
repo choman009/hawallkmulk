@@ -336,6 +336,7 @@ export default function Workspace({
           office_address: office?.address ?? null,
           office_contact: office?.contact_name ?? null,
           office_phone: office?.phone ?? null,
+          office_phone_secondary: office?.phone_secondary ?? null,
         };
       })
     : data.record_sources;
@@ -353,9 +354,15 @@ export default function Workspace({
     .filter((p) => type === "all" || p.type === type)
     .filter((p) => purpose === "all" || p.purpose === purpose)
     .filter((p) =>
-      [p.title, p.ref, p.city, p.neighborhood, p.contact_name, p.phone].some(
-        (v) => v.toLocaleLowerCase().includes(query.toLocaleLowerCase()),
-      ),
+      [
+        p.title,
+        p.ref,
+        p.city,
+        p.neighborhood,
+        p.contact_name,
+        p.phone,
+        p.phone_secondary ?? "",
+      ].some((v) => v.toLocaleLowerCase().includes(query.toLocaleLowerCase())),
     );
   const requests = visibleRequests
     .filter((r) =>
@@ -369,8 +376,8 @@ export default function Workspace({
       ),
     );
   const offices = scoped.partner_offices.filter((o) =>
-    [o.name, o.contact_name, o.address, o.phone].some((v) =>
-      v.toLocaleLowerCase().includes(query.toLocaleLowerCase()),
+    [o.name, o.contact_name, o.address, o.phone, o.phone_secondary ?? ""].some(
+      (v) => v.toLocaleLowerCase().includes(query.toLocaleLowerCase()),
     ),
   );
   const myAssignments = data.assignments.filter(
@@ -505,7 +512,12 @@ export default function Workspace({
                   </span>
                 </td>
                 <td>
-                  <ContactActions phone={p.phone} t={t} compact />
+                  <ContactActions
+                    phone={p.phone}
+                    secondaryPhone={p.phone_secondary}
+                    t={t}
+                    compact
+                  />
                 </td>
               </tr>
             ))}
@@ -1108,7 +1120,12 @@ export default function Workspace({
                                 <BedDouble size={14} />
                                 {p.bedrooms ?? "—"}
                               </span>
-                              <ContactActions phone={p.phone} t={t} compact />
+                              <ContactActions
+                                phone={p.phone}
+                                secondaryPhone={p.phone_secondary}
+                                t={t}
+                                compact
+                              />
                             </div>
                           </div>
                         </article>
@@ -1199,7 +1216,16 @@ export default function Workspace({
                         <span className="phone-text" dir="ltr">
                           {o.phone}
                         </span>
-                        <ContactActions phone={o.phone} t={t} />
+                        {o.phone_secondary && (
+                          <span className="phone-text" dir="ltr">
+                            {o.phone_secondary}
+                          </span>
+                        )}
+                        <ContactActions
+                          phone={o.phone}
+                          secondaryPhone={o.phone_secondary}
+                          t={t}
+                        />
                       </article>
                     ))}
                   </div>

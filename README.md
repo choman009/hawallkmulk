@@ -28,7 +28,7 @@ Open http://127.0.0.1:3000. Without Supabase variables, the app opens a clearly 
 
 ## Supabase setup
 
-1. Create a **new** Supabase project. Run the entire `supabase/migrations/202610300001_initial.sql` in its SQL Editor, or apply it through the Supabase CLI migration workflow. This migration creates the schema, RLS policies, auth profile trigger, audit triggers and a private `property-images` bucket. It is an initial migration, not an idempotent script for an existing populated schema.
+1. Create a **new** Supabase project. Run the entire `supabase/migrations/202610300001_initial.sql` in its SQL Editor, then run `supabase/migrations/202610310001_secondary_phones.sql`, or apply all migrations in order through the Supabase CLI migration workflow. This migration creates the schema, RLS policies, auth profile trigger, audit triggers and a private `property-images` bucket. It is an initial migration, not an idempotent script for an existing populated schema.
 2. Disable public sign-ups in Authentication settings. Configure Site URL and allowed Redirect URLs for your localhost and production domain, including `/auth/callback` and `/auth/confirm`.
 3. Create the initial owner through **Authentication → Users → Add user**, using your own real email and a strong password. The auth trigger creates an inactive freelancer profile; it never trusts metadata to assign roles. Then run this in the trusted SQL Editor, replacing the email/name:
 
@@ -112,3 +112,7 @@ After deploying a branding update, remove an existing old home-screen shortcut a
 - `docs/SETUP-ckb.md`: Kurdish setup guide.
 
 Reference documentation: [Next.js installation](https://nextjs.org/docs/app/getting-started/installation), [Supabase SSR clients](https://supabase.com/docs/guides/auth/server-side/creating-a-client), [Supabase storage policies](https://supabase.com/docs/guides/storage/security/access-control), [WhatsApp click to chat](https://faq.whatsapp.com/5913398998672934).
+
+### Updating an existing project: optional second phone
+
+Run only `supabase/migrations/202610310001_secondary_phones.sql` in Supabase SQL Editor. This repeatable migration preserves records and adds optional second phone numbers to properties and partner offices, including their scoped contact projection. Do not rerun the initial migration. Deploy the updated app after applying this file.
