@@ -72,7 +72,7 @@ The service-role key is required only by the protected invitation endpoint. Neve
 - Assigned work exposes that record's client/property contact details and linked partner-office contact details. The source projection contains only names/contact fields, never unrelated profile phones or partner-directory notes.
 - Completed assignments retain record access for reviewing completed work. Cancel the assignment to revoke assignment-based access. Own-source access remains independent.
 - RLS blocks subsequent reads/writes immediately after revocation or deactivation. The client refreshes its loaded data every minute. Previously downloaded data cannot be recalled, and already-issued photo URLs remain valid for up to 60 seconds. Avoid sharing signed URLs.
-- Archive preserves history; core records have no delete policies. Activity logs store actor/target/operation, not entire private record snapshots.
+- Archive preserves history. Owner/admin deletion uses a private tombstone registry and restrictive RLS to remove records and dependent assignments from access. It retains underlying rows and private files for database maintenance recovery; there is no public hard-delete policy. Activity logs record deletion actors and targets.
 
 ## Verify
 
@@ -116,3 +116,9 @@ Reference documentation: [Next.js installation](https://nextjs.org/docs/app/gett
 ### Updating an existing project: optional second phone
 
 Run only `supabase/migrations/202610310001_secondary_phones.sql` in Supabase SQL Editor. This repeatable migration preserves records and adds optional second phone numbers to properties and partner offices, including their scoped contact projection. Do not rerun the initial migration. Deploy the updated app after applying this file.
+
+### Updating an existing project: administrator deletion
+
+Apply `202610310001_secondary_phones.sql` first if it has not already succeeded, then run `supabase/migrations/202610310002_record_deletion.sql`. Both incremental files are safe to repeat. Never rerun the initial migration on an existing project. The second migration adds the owner/admin deletion RPC, private tombstones, access policies and deleted-link guards. A deleted office keeps its properties and requests, while its directory contact stops being projected. Deleting properties/requests also removes their assignments and updates from access. Existing signed photo URLs expire within 60 seconds. Database maintenance can recover retained rows by removing the corresponding tombstones; no restore UI is provided. Demo deletion removes only local fictional data.
+
+If a save reports a database update requirement, check these files succeeded against the same Supabase project as the Vercel environment variables. A filled second phone cannot be stored before the first update. The app now distinguishes schema, session, access, constraint and linked-record failures without displaying private database error values. Local PostgreSQL tests verify behavior; the production schema and PostgREST service still need verification in your Supabase project.

@@ -5,6 +5,7 @@ import type { TextKey } from "@/lib/i18n";
 import type { Profile, WorkspaceData, RecordTable } from "@/lib/domain";
 import { validateRecord, isAdmin } from "@/lib/domain";
 import { normalizePhone } from "@/lib/phone";
+import { mutationErrorKey } from "@/lib/mutation-errors";
 type Field = {
   key: string;
   type?: string;
@@ -165,8 +166,8 @@ export function RecordForm({
     setBusy(true);
     try {
       await onSave(values);
-    } catch {
-      setError(t("genericError"));
+    } catch (error) {
+      setError(t(mutationErrorKey(error)));
     } finally {
       setBusy(false);
     }

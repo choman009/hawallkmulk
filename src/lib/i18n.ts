@@ -154,6 +154,14 @@ export const en = {
   resetConfirm: "Reset all demo changes in this browser?",
   saved: "Saved successfully",
   genericError: "Could not complete this action. Please try again.",
+  schemaUpdateRequired:
+    "The database needs an update. Apply the latest SQL migrations in Supabase, then try again.",
+  linkedRecordError:
+    "A linked record is unavailable. Refresh the page and select it again.",
+  deleteRecord: "Delete",
+  deleteConfirm:
+    "Remove this record from the workspace? Its related assignments and updates will also be removed. Removing an office keeps its properties and requests.",
+  deleted: "Deleted successfully",
   validationError:
     "Check the required fields, phone number and numeric ranges.",
   sessionError: "Your session is unavailable. Sign in again.",
@@ -381,6 +389,14 @@ export const ckb: Record<TextKey, string> = {
   demoInvite: "ئەندامی تاقیکاری زیاد کرا. هیچ ئیمەیڵێک نەنێردرا.",
   saved: "بە سەرکەوتوویی پاشەکەوت کرا",
   genericError: "کارەکە سەرکەوتوو نەبوو. تکایە دووبارە هەوڵ بدەوە.",
+  schemaUpdateRequired:
+    "داتابەیس پێویستی بە نوێکردنەوە هەیە. فایلە SQLە نوێیەکان لە Supabase جێبەجێ بکە، پاشان دووبارە هەوڵ بدەوە.",
+  linkedRecordError:
+    "تۆمارێکی پەیوەست بەردەست نییە. پەڕەکە نوێ بکەرەوە و دووبارە هەڵیبژێرە.",
+  deleteRecord: "سڕینەوە",
+  deleteConfirm:
+    "ئەم تۆمارە لە شوێنی کار بسڕدرێتەوە؟ ئەرک و بەدواداچوونە پەیوەستەکانی تۆمارەکەش دەسڕدرێنەوە. سڕینەوەی نووسینگە، موڵک و داواکارییەکانی دەپارێزێت.",
+  deleted: "بە سەرکەوتوویی سڕایەوە",
   validationError: "خانە پێویستەکان، ژمارەی مۆبایل و سنووری ژمارەکان بپشکنە.",
   sessionError: "دانیشتنەکەت بەردەست نییە. دووبارە بچۆ ژوورەوە.",
   permissionDenied: "دەسەڵاتی ئەم کارەت نییە.",

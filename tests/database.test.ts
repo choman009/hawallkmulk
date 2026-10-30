@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { PGlite } from "@electric-sql/pglite";
+import { mutationErrorKey } from "../src/lib/mutation-errors.ts";
 const ids = {
   owner: "00000000-0000-4000-8000-000000000001",
   admin: "00000000-0000-4000-8000-000000000002",
@@ -39,6 +40,20 @@ test("PostgreSQL migration enforces own/assigned scope, progress, revocation, pr
    insert into public.client_requests(id,client_name,phone,kind,type,city,source_contributor_id,created_by) values('${ids.r1}','Client','+9647501234567','buy','house','Erbil','${ids.other}','${ids.owner}');
    insert into public.assignments(id,property_id,assignee_id,kind,assigned_by) values('${ids.a1}','${ids.p2}','${ids.free}','sell','${ids.owner}');
    insert into storage.objects(bucket_id,name) values('property-images','${ids.p2}/photo.jpg');`);
+    // Reproduce the live symptom when the second-phone rollout SQL was not applied.
+    for (const table of ["properties", "partner_offices"]) {
+      await assert.rejects(
+        () =>
+          db.query(
+            `update public.${table} set phone_secondary='+9647701234567'`,
+          ),
+        (error) => {
+          assert.equal((error as { code: string }).code, "42703");
+          assert.equal(mutationErrorKey(error), "schemaUpdateRequired");
+          return true;
+        },
+      );
+    }
     const secondaryMigration = await readFile(
       new URL(
         "../supabase/migrations/202610310001_secondary_phones.sql",
@@ -58,6 +73,15 @@ test("PostgreSQL migration enforces own/assigned scope, progress, revocation, pr
         await db.exec("rollback");
       }
     }
+    const deletionMigration = await readFile(
+      new URL(
+        "../supabase/migrations/202610310002_record_deletion.sql",
+        import.meta.url,
+      ),
+      "utf8",
+    );
+    await db.exec(deletionMigration);
+    await db.exec(deletionMigration);
     await t.test(
       "optional secondary phones persist, clear and reject invalid values without replacing the primary",
       async () => {
@@ -435,6 +459,176 @@ test("PostgreSQL migration enforces own/assigned scope, progress, revocation, pr
           !JSON.stringify(result.rows).includes("Private directory note"),
         );
         assert.ok(!JSON.stringify(result.rows).includes("Hidden office"));
+      },
+    );
+    await t.test(
+      "only administrators may delete; deletion hides related tasks, updates, contacts and images",
+      async () => {
+        await db.exec(`insert into public.property_images(property_id,path) values('${ids.p2}','${ids.p2}/photo.jpg');
+          insert into public.assignment_updates(assignment_id,author_id,note) values('${ids.a1}','${ids.owner}','Deletion test');
+          update public.client_requests set property_id='${ids.p2}' where id='${ids.r1}';`);
+        for (const actor of [ids.free, ids.other]) {
+          await assert.rejects(() =>
+            asUser(
+              actor,
+              `select public.delete_record('properties','${ids.p1}')`,
+            ),
+          );
+        }
+        for (const actor of [ids.owner, ids.admin])
+          for (const table of [
+            "properties",
+            "client_requests",
+            "partner_offices",
+            "assignments",
+          ]) {
+            const target =
+              table === "properties"
+                ? ids.p2
+                : table === "client_requests"
+                  ? ids.r1
+                  : table === "assignments"
+                    ? ids.a1
+                    : "30000000-0000-4000-8000-000000000001";
+            await db.exec(
+              `begin; set local role authenticated; select set_config('request.jwt.claim.sub','${actor}',true);`,
+            );
+            try {
+              await db.query(
+                `select public.delete_record('${table}','${target}')`,
+              );
+              assert.equal(
+                (
+                  await db.query(
+                    `select id from public.${table} where id='${target}'`,
+                  )
+                ).rows.length,
+                0,
+              );
+              if (table === "properties") {
+                assert.equal(
+                  (
+                    await db.query<{ property_id: string | null }>(
+                      `select property_id from public.client_requests where id='${ids.r1}'`,
+                    )
+                  ).rows[0].property_id,
+                  null,
+                );
+                assert.equal(
+                  (
+                    await db.query(
+                      `update public.client_requests set status='archived' where id='${ids.r1}' returning id`,
+                    )
+                  ).rows.length,
+                  1,
+                );
+                assert.equal(
+                  (
+                    await db.query(
+                      `select id from storage.objects where name='${target}/photo.jpg'`,
+                    )
+                  ).rows.length,
+                  0,
+                );
+                assert.equal(
+                  (
+                    await db.query(
+                      `select id from public.assignment_updates where assignment_id='${ids.a1}'`,
+                    )
+                  ).rows.length,
+                  0,
+                );
+                assert.equal(
+                  (
+                    await db.query<{ allowed: boolean }>(
+                      `select public.can_read_property('${target}') as allowed`,
+                    )
+                  ).rows[0].allowed,
+                  false,
+                );
+                assert.equal(
+                  (
+                    await db.query<{ allowed: boolean }>(
+                      `select public.can_edit_property('${target}') as allowed`,
+                    )
+                  ).rows[0].allowed,
+                  false,
+                );
+                assert.equal(
+                  (
+                    await db.query(
+                      `select id from public.assignments where property_id='${target}'`,
+                    )
+                  ).rows.length,
+                  0,
+                );
+                assert.equal(
+                  (
+                    await db.query(
+                      `select id from public.property_images where property_id='${target}'`,
+                    )
+                  ).rows.length,
+                  0,
+                );
+                assert.equal(
+                  (
+                    await db.query(
+                      `select record_id from public.visible_record_sources() where record_id='${target}'`,
+                    )
+                  ).rows.length,
+                  0,
+                );
+              }
+              if (table === "partner_offices") {
+                assert.equal(
+                  (
+                    await db.query(
+                      `select id from public.properties where id='${ids.p1}'`,
+                    )
+                  ).rows.length,
+                  1,
+                );
+                assert.equal(
+                  (
+                    await db.query<{ office_phone: string | null }>(
+                      `select office_phone from public.visible_record_sources() where record_id='${ids.p1}'`,
+                    )
+                  ).rows[0].office_phone,
+                  null,
+                );
+              }
+              if (table === "client_requests") {
+                assert.equal(
+                  (
+                    await db.query<{ allowed: boolean }>(
+                      `select public.can_read_request('${target}') as allowed`,
+                    )
+                  ).rows[0].allowed,
+                  false,
+                );
+              }
+              if (table === "assignments") {
+                assert.equal(
+                  (
+                    await db.query(
+                      `select id from public.assignment_updates where assignment_id='${target}'`,
+                    )
+                  ).rows.length,
+                  0,
+                );
+                assert.equal(
+                  (
+                    await db.query(
+                      `select id from public.properties where id='${ids.p2}'`,
+                    )
+                  ).rows.length,
+                  1,
+                );
+              }
+            } finally {
+              await db.exec("rollback");
+            }
+          }
       },
     );
     await t.test(

@@ -35,6 +35,7 @@ import {
   RotateCcw,
   Check,
   AlertCircle,
+  Trash2,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type {
@@ -55,10 +56,13 @@ import {
   storeDemo,
   loadWorkspace,
   persist,
+  deleteRecord,
   DEMO_KEY,
 } from "@/lib/repository";
 import { ContactActions } from "./contact-actions";
 import { BrandLogo } from "./brand-logo";
+import { deleteDemoRecord, type DeletableTable } from "@/lib/delete-record";
+import { mutationErrorKey } from "@/lib/mutation-errors";
 import { Modal } from "./modal";
 import { RecordForm } from "./record-form";
 import { RecordDetail } from "./record-detail";
@@ -106,6 +110,13 @@ export default function Workspace({
     >(null),
     [toast, setToast] = useState("");
   const dict = useMemo(() => dictionary(locale), [locale]);
+  const [pendingDelete, setPendingDelete] = useState<{
+    table: DeletableTable;
+    id: string;
+    name: string;
+  } | null>(null);
+  const [deleting, setDeleting] = useState(false),
+    [deleteError, setDeleteError] = useState("");
   const t = useCallback((key: TextKey): string => dict[key] ?? key, [dict]);
   const demo = !isConfigured;
   const refresh = useCallback(
@@ -270,6 +281,40 @@ export default function Workspace({
       await refresh();
     }
     setToast(t("saved"));
+  }
+  function requestDelete(table: DeletableTable, id: string, name: string) {
+    if (!profile || !isAdmin(profile) || !profile.can_write) return;
+    setDeleteError("");
+    setPendingDelete({ table, id, name });
+  }
+  async function confirmDelete() {
+    if (
+      !pendingDelete ||
+      !data ||
+      !profile ||
+      !isAdmin(profile) ||
+      !profile.can_write
+    )
+      return;
+    setDeleting(true);
+    setDeleteError("");
+    try {
+      if (demo)
+        updateDemo(
+          deleteDemoRecord(data, pendingDelete.table, pendingDelete.id),
+        );
+      else {
+        await deleteRecord(pendingDelete.table, pendingDelete.id);
+        await refresh();
+      }
+      setDetail(null);
+      setPendingDelete(null);
+      setToast(t("deleted"));
+    } catch (error) {
+      setDeleteError(t(mutationErrorKey(error)));
+    } finally {
+      setDeleting(false);
+    }
   }
   if (loading)
     return (
@@ -1240,6 +1285,7 @@ export default function Workspace({
               profile={profile}
               t={t}
               onAdd={() => setAssignment(true)}
+              onDelete={(id, name) => requestDelete("assignments", id, name)}
               onOpen={open}
               onProgress={(id, status) => save("assignments", { status }, id)}
               onUpdate={(id, note) =>
@@ -1364,6 +1410,17 @@ export default function Workspace({
           onArchive={() =>
             save(detail.table, { status: "archived" }, record.id)
           }
+          onDelete={() =>
+            requestDelete(
+              detail.table,
+              record.id,
+              "title" in record
+                ? record.title
+                : "client_name" in record
+                  ? record.client_name
+                  : record.name,
+            )
+          }
           onRefresh={refresh}
           onOpen={(id) => setDetail({ table: "properties", id })}
         />
@@ -1384,6 +1441,40 @@ export default function Workspace({
               setAssignment(null);
             }}
           />
+        </Modal>
+      )}
+      {pendingDelete && (
+        <Modal
+          title={t("deleteRecord")}
+          closeLabel={t("close")}
+          onClose={() => {
+            if (!deleting) setPendingDelete(null);
+          }}
+        >
+          <h3>{pendingDelete.name}</h3>
+          <p>{t("deleteConfirm")}</p>
+          {deleteError && (
+            <p className="form-error" role="alert">
+              {deleteError}
+            </p>
+          )}
+          <div className="form-actions">
+            <button
+              className="button secondary"
+              disabled={deleting}
+              onClick={() => setPendingDelete(null)}
+            >
+              {t("cancel")}
+            </button>
+            <button
+              className="button secondary danger"
+              disabled={deleting}
+              onClick={confirmDelete}
+            >
+              <Trash2 size={17} />
+              {t(deleting ? "saving" : "deleteRecord")}
+            </button>
+          </div>
         </Modal>
       )}
     </div>

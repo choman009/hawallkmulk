@@ -1,6 +1,7 @@
 "use client";
 import { useState, type FormEvent } from "react";
-import { Plus, ArrowUpRight, Check, Clock3 } from "lucide-react";
+import { Plus, ArrowUpRight, Check, Clock3, Trash2 } from "lucide-react";
+import { mutationErrorKey } from "@/lib/mutation-errors";
 import type { WorkspaceData, Profile, Assignment } from "@/lib/domain";
 import { isAdmin } from "@/lib/domain";
 import type { TextKey } from "@/lib/i18n";
@@ -35,8 +36,8 @@ export function AssignmentForm({
         due_date: fd.get("due_date") || null,
         status: "assigned",
       });
-    } catch {
-      setError(t("genericError"));
+    } catch (error) {
+      setError(t(mutationErrorKey(error)));
     } finally {
       setBusy(false);
     }
@@ -140,6 +141,7 @@ export function AssignmentPanel({
   onUpdate,
   onOpen,
   onAdd,
+  onDelete,
 }: {
   data: WorkspaceData;
   profile: Profile;
@@ -148,6 +150,7 @@ export function AssignmentPanel({
   onUpdate: (id: string, note: string) => Promise<void>;
   onOpen: (type: "properties" | "client_requests", id: string) => void;
   onAdd: () => void;
+  onDelete: (id: string, name: string) => void;
 }) {
   const [selected, setSelected] = useState<Assignment | null>(null),
     [filter, setFilter] = useState("all"),
@@ -166,8 +169,8 @@ export function AssignmentPanel({
     setError("");
     try {
       await onProgress(a.id, status);
-    } catch {
-      setError(t("genericError"));
+    } catch (error) {
+      setError(t(mutationErrorKey(error)));
     } finally {
       setBusy(false);
     }
@@ -211,6 +214,22 @@ export function AssignmentPanel({
                 </span>
               </div>
               <h3>{t(a.kind as TextKey)}</h3>
+              {isAdmin(profile) && profile.can_write && (
+                <button
+                  className="text-button danger"
+                  onClick={() =>
+                    onDelete(
+                      a.id,
+                      record
+                        ? `${record.ref} · ${t(a.kind as TextKey)}`
+                        : t(a.kind as TextKey),
+                    )
+                  }
+                >
+                  <Trash2 size={16} />
+                  {t("deleteRecord")}
+                </button>
+              )}
               <button
                 className="record-link"
                 disabled={!record}
@@ -337,8 +356,8 @@ export function AssignmentPanel({
                   try {
                     await onUpdate(current.id, note);
                     form.reset();
-                  } catch {
-                    setError(t("genericError"));
+                  } catch (error) {
+                    setError(t(mutationErrorKey(error)));
                   } finally {
                     setBusy(false);
                   }

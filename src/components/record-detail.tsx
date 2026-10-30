@@ -1,4 +1,5 @@
 "use client";
+import { mutationErrorKey } from "@/lib/mutation-errors";
 import { useEffect, useState, useRef } from "react";
 import {
   Pencil,
@@ -9,6 +10,7 @@ import {
   BedDouble,
   Scan,
   Building2,
+  Trash2,
 } from "lucide-react";
 import type {
   WorkspaceData,
@@ -37,6 +39,7 @@ export function RecordDetail({
   onEdit,
   onAssign,
   onArchive,
+  onDelete,
   onRefresh,
   onOpen,
 }: {
@@ -50,6 +53,7 @@ export function RecordDetail({
   onEdit: () => void;
   onAssign: () => void;
   onArchive: () => Promise<void>;
+  onDelete: () => void;
   onRefresh: () => Promise<void>;
   onOpen: (id: string) => void;
 }) {
@@ -409,8 +413,8 @@ export function RecordDetail({
                 try {
                   await onArchive();
                   onClose();
-                } catch {
-                  setError(t("genericError"));
+                } catch (error) {
+                  setError(t(mutationErrorKey(error)));
                 } finally {
                   setBusy(false);
                 }
@@ -425,6 +429,18 @@ export function RecordDetail({
         <p className="form-error" role="alert">
           {error}
         </p>
+      )}
+      {isAdmin(profile) && profile.can_write && (
+        <div className="form-actions">
+          <button
+            className="text-button danger"
+            disabled={busy}
+            onClick={onDelete}
+          >
+            <Trash2 size={16} />
+            {t("deleteRecord")}
+          </button>
+        </div>
       )}
     </Modal>
   );

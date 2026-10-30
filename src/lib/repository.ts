@@ -1,6 +1,7 @@
 import { getBrowserClient } from "./supabase/client";
 import { initialDemo } from "./demo";
 import type { WorkspaceData, Profile, PropertyImage } from "./domain";
+import type { DeletableTable } from "./delete-record";
 import {
   isAuthSessionMissingError,
   type SupabaseClient,
@@ -123,6 +124,15 @@ export async function photoUrls(images: PropertyImage[]) {
       return { ...image, url: data.signedUrl };
     }),
   );
+}
+export async function deleteRecord(table: DeletableTable, id: string) {
+  const client = getBrowserClient();
+  if (!client) throw new Error("sessionError");
+  const { error } = await client.rpc("delete_record", {
+    target_table: table,
+    target_id: id,
+  });
+  if (error) throw error;
 }
 export async function uploadPhoto(propertyId: string, file: File) {
   const client = getBrowserClient();
