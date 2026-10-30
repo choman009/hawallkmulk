@@ -1,6 +1,10 @@
 import { getBrowserClient } from "./supabase/client";
 import { initialDemo } from "./demo";
 import type { WorkspaceData, Profile, PropertyImage } from "./domain";
+import {
+  isAuthSessionMissingError,
+  type SupabaseClient,
+} from "@supabase/supabase-js";
 export const DEMO_KEY = "hawall-mulk-demo-v1";
 export function readDemo(): WorkspaceData {
   try {
@@ -25,16 +29,24 @@ export function readDemo(): WorkspaceData {
 export function storeDemo(data: WorkspaceData) {
   localStorage.setItem(DEMO_KEY, JSON.stringify(data));
 }
-export async function loadWorkspace(): Promise<{
+export async function loadWorkspace({
+  allowSignedOut = false,
+  client = getBrowserClient(),
+}: {
+  allowSignedOut?: boolean;
+  client?: SupabaseClient | null;
+} = {}): Promise<{
   data: WorkspaceData;
   profile: Profile;
-}> {
-  const client = getBrowserClient();
+} | null> {
   if (!client) throw new Error("sessionError");
   const {
     data: { user },
     error,
   } = await client.auth.getUser();
+  // A first-time visitor is signed out, not experiencing an expired session.
+  if (allowSignedOut && !user && (!error || isAuthSessionMissingError(error)))
+    return null;
   if (error || !user) throw new Error("sessionError");
   const { data: profile, error: profileError } = await client
     .from("profiles")

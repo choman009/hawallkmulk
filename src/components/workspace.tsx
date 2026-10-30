@@ -107,15 +107,24 @@ export default function Workspace({
   const dict = useMemo(() => dictionary(locale), [locale]);
   const t = useCallback((key: TextKey): string => dict[key] ?? key, [dict]);
   const demo = !isConfigured;
-  const refresh = useCallback(async (preferences = false) => {
-    const result = await loadWorkspace();
-    setData(result.data);
-    setProfile(result.profile);
-    if (preferences) {
-      setLocale(result.profile.locale);
-      setTheme(result.profile.theme);
-    }
-  }, []);
+  const refresh = useCallback(
+    async (preferences = false, allowSignedOut = false) => {
+      const result = await loadWorkspace({ allowSignedOut });
+      if (!result) {
+        setData(null);
+        setProfile(null);
+        setLoadError("");
+        return;
+      }
+      setData(result.data);
+      setProfile(result.profile);
+      if (preferences) {
+        setLocale(result.profile.locale);
+        setTheme(result.profile.theme);
+      }
+    },
+    [],
+  );
   useEffect(() => {
     const savedLocale = localStorage.getItem("hm-locale");
     if (savedLocale === "ckb" || savedLocale === "en") setLocale(savedLocale);
@@ -127,7 +136,7 @@ export default function Workspace({
       setProfile(d.profiles[0]);
       setLoading(false);
     } else {
-      refresh(true)
+      refresh(true, true)
         .catch((e) =>
           setLoadError(
             e instanceof Error &&

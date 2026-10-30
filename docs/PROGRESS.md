@@ -42,3 +42,8 @@ No real Supabase/Vercel project configuration was supplied. Live email delivery,
 
 Bundled Noto Kufi Arabic locally for Kurdish headings/navigation/actions, paired with Noto Sans Arabic for body/forms. Kurdish body text is 15px, common labels/rows 14px, metadata at least 12px. Removed negative heading tracking for Arabic, adjusted line height and sidebar width. Production build passed. Browser verified both fonts loaded, 15px body and 14px rows; preview refreshed. Screenshot: docs/screenshots/typography-ckb.jpg. No application behavior changed.
 
+
+## Initial signed-out session fix
+
+A configured Supabase app incorrectly displayed sessionError on the first visit because startup treated AuthSessionMissingError as a failed authenticated operation. Added an explicit startup-only allowSignedOut option that returns no workspace for a missing session. Login, periodic refresh and actual authentication failures retain existing error behavior. Regression observed RED then GREEN; full suite 20/20 and production build passed. Independent focused review found no issues. Local browser using dummy public configuration showed the login form without the error banner; no real credentials or database were used.
+
