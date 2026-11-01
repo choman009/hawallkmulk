@@ -5,6 +5,8 @@ import { mutationErrorKey } from "@/lib/mutation-errors";
 import type { WorkspaceData, Profile, Assignment } from "@/lib/domain";
 import { isAdmin } from "@/lib/domain";
 import type { TextKey } from "@/lib/i18n";
+import { FavoriteButton } from "./favorite-button";
+import type { useFavorites } from "@/lib/use-favorites";
 import { Modal } from "./modal";
 export function AssignmentForm({
   data,
@@ -134,6 +136,7 @@ export function AssignmentForm({
   );
 }
 export function AssignmentPanel({
+  favorites,
   data,
   profile,
   t,
@@ -151,15 +154,23 @@ export function AssignmentPanel({
   onOpen: (type: "properties" | "client_requests", id: string) => void;
   onAdd: () => void;
   onDelete: (id: string, name: string) => void;
+  favorites: ReturnType<typeof useFavorites>;
 }) {
   const [selected, setSelected] = useState<Assignment | null>(null),
     [filter, setFilter] = useState("all"),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
+  const [onlyFavorites, setOnlyFavorites] = useState(false);
   const current = selected
     ? data.assignments.find((a) => a.id === selected.id)
     : null;
   const items = data.assignments
+    .filter((a) => !onlyFavorites || favorites.has("assignments", a.id))
+    .sort(
+      (a, b) =>
+        Number(favorites.has("assignments", b.id)) -
+        Number(favorites.has("assignments", a.id)),
+    )
     .filter(
       (a) => profile.role !== "freelancer" || a.assignee_id === profile.id,
     )
@@ -178,6 +189,13 @@ export function AssignmentPanel({
   return (
     <>
       <div className="list-toolbar">
+        <button
+          className={`button ${onlyFavorites ? "primary" : "secondary"}`}
+          aria-pressed={onlyFavorites}
+          onClick={() => setOnlyFavorites(!onlyFavorites)}
+        >
+          {t("favorites")}
+        </button>
         <div className="tabs">
           {["all", "assigned", "in_progress", "completed", "canceled"].map(
             (k) => (
@@ -206,6 +224,16 @@ export function AssignmentPanel({
           return (
             <article className={`assignment-card ${a.status}`} key={a.id}>
               <div className="card-top">
+                <FavoriteButton
+                  active={favorites.has("assignments", a.id)}
+                  busy={favorites.busy}
+                  label={t(
+                    favorites.has("assignments", a.id)
+                      ? "removeFavorite"
+                      : "addFavorite",
+                  )}
+                  onClick={() => void favorites.toggle("assignments", a.id)}
+                />
                 <span className={`status ${a.status}`}>
                   {t(a.status as TextKey)}
                 </span>

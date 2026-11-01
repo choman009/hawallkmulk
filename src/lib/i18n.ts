@@ -69,6 +69,11 @@ export const en = {
   title: "Property title",
   description: "Description",
   contact_name: "Contact name",
+  favorites: "Favorites",
+  addFavorite: "Add to favorites",
+  removeFavorite: "Remove from favorites",
+  favoriteError:
+    "Could not save or load favorites. Check your connection and that the favorites SQL update is applied.",
   phone: "Phone number",
   phone_secondary: "Second phone number",
   source_contributor_id: "Contributor",
@@ -304,6 +309,11 @@ export const ckb: Record<TextKey, string> = {
   title: "ناونیشانی موڵک",
   description: "وردەکاری",
   contact_name: "ناوی پەیوەندی",
+  favorites: "دڵخوازەکان",
+  addFavorite: "زیادکردن بۆ دڵخواز",
+  removeFavorite: "لابردن لە دڵخواز",
+  favoriteError:
+    "دڵخوازەکان بار یان پاشەکەوت نەکران. پەیوەندی ئینتەرنێت و جێبەجێکردنی SQLی دڵخواز بپشکنە.",
   phone: "ژمارەی مۆبایل",
   phone_secondary: "ژمارەی مۆبایلی دووەم",
   source_contributor_id: "هێنەری تۆمار",

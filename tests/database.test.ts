@@ -631,6 +631,54 @@ test("PostgreSQL migration enforces own/assigned scope, progress, revocation, pr
           }
       },
     );
+    await db.exec(
+      await readFile(
+        new URL(
+          "../supabase/migrations/202611010001_favorites.sql",
+          import.meta.url,
+        ),
+        "utf8",
+      ),
+    );
+    await t.test(
+      "favorites are personal and cannot grant record access",
+      async () => {
+        await asUser(
+          ids.owner,
+          `insert into public.favorites(user_id,record_table,record_id) values ('${ids.owner}','properties','${ids.p1}')`,
+        );
+        await assert.rejects(() =>
+          asUser(
+            ids.free,
+            `insert into public.favorites(user_id,record_table,record_id) values ('${ids.owner}','properties','${ids.p1}')`,
+          ),
+        );
+        await assert.rejects(() =>
+          asUser(
+            ids.free,
+            `insert into public.favorites(user_id,record_table,record_id) values ('${ids.free}','properties','${ids.p2}')`,
+          ),
+        );
+        await db.exec(
+          `insert into public.favorites(user_id,record_table,record_id) values ('${ids.owner}','properties','${ids.p1}')`,
+        );
+        assert.equal(
+          (await asUser(ids.free, "select * from public.favorites")).rows
+            .length,
+          0,
+        );
+        assert.equal(
+          (await asUser(ids.free, "delete from public.favorites returning *"))
+            .rows.length,
+          0,
+        );
+        assert.equal(
+          (await asUser(ids.owner, "delete from public.favorites returning *"))
+            .rows.length,
+          1,
+        );
+      },
+    );
     await t.test(
       "inactive user with a valid subject loses all operational access",
       async () => {

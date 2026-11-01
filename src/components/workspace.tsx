@@ -60,6 +60,8 @@ import {
   DEMO_KEY,
 } from "@/lib/repository";
 import { ContactActions } from "./contact-actions";
+import { useFavorites } from "@/lib/use-favorites";
+import { FavoriteButton } from "./favorite-button";
 import { BrandLogo } from "./brand-logo";
 import { deleteDemoRecord, type DeletableTable } from "@/lib/delete-record";
 import { mutationErrorKey } from "@/lib/mutation-errors";
@@ -119,6 +121,16 @@ export default function Workspace({
     [deleteError, setDeleteError] = useState("");
   const t = useCallback((key: TextKey): string => dict[key] ?? key, [dict]);
   const demo = !isConfigured;
+  const favorites = useFavorites(profile?.id, demo);
+  const [onlyFavorites, setOnlyFavorites] = useState(false);
+  const favorite = (table: string, id: string) => (
+    <FavoriteButton
+      active={favorites.has(table, id)}
+      busy={favorites.busy}
+      label={t(favorites.has(table, id) ? "removeFavorite" : "addFavorite")}
+      onClick={() => void favorites.toggle(table, id)}
+    />
+  );
   const refresh = useCallback(
     async (preferences = false, allowSignedOut = false) => {
       const result = await loadWorkspace({ allowSignedOut });
@@ -215,6 +227,7 @@ export default function Workspace({
     return () => clearInterval(timer);
   }, [demo, profile?.id, refresh]);
   function navigate(next: Page) {
+    setOnlyFavorites(false);
     setPage(next);
     setView("table");
     setQuery("");
@@ -394,6 +407,12 @@ export default function Workspace({
     record_sources: demoSources,
   };
   const properties = visibleProperties
+    .filter((p) => !onlyFavorites || favorites.has("properties", p.id))
+    .sort(
+      (a, b) =>
+        Number(favorites.has("properties", b.id)) -
+        Number(favorites.has("properties", a.id)),
+    )
     .filter((p) =>
       status === "all" ? p.status !== "archived" : p.status === status,
     )
@@ -411,6 +430,12 @@ export default function Workspace({
       ].some((v) => v.toLocaleLowerCase().includes(query.toLocaleLowerCase())),
     );
   const requests = visibleRequests
+    .filter((r) => !onlyFavorites || favorites.has("client_requests", r.id))
+    .sort(
+      (a, b) =>
+        Number(favorites.has("client_requests", b.id)) -
+        Number(favorites.has("client_requests", a.id)),
+    )
     .filter((r) =>
       status === "all" ? r.status !== "archived" : r.status === status,
     )
@@ -421,11 +446,22 @@ export default function Workspace({
         v.toLocaleLowerCase().includes(query.toLocaleLowerCase()),
       ),
     );
-  const offices = scoped.partner_offices.filter((o) =>
-    [o.name, o.contact_name, o.address, o.phone, o.phone_secondary ?? ""].some(
-      (v) => v.toLocaleLowerCase().includes(query.toLocaleLowerCase()),
-    ),
-  );
+  const offices = scoped.partner_offices
+    .filter((o) => !onlyFavorites || favorites.has("partner_offices", o.id))
+    .sort(
+      (a, b) =>
+        Number(favorites.has("partner_offices", b.id)) -
+        Number(favorites.has("partner_offices", a.id)),
+    )
+    .filter((o) =>
+      [
+        o.name,
+        o.contact_name,
+        o.address,
+        o.phone,
+        o.phone_secondary ?? "",
+      ].some((v) => v.toLocaleLowerCase().includes(query.toLocaleLowerCase())),
+    );
   const myAssignments = data.assignments.filter(
     (a) =>
       a.status !== "completed" &&
@@ -532,6 +568,7 @@ export default function Workspace({
                       >
                         {p.title}
                       </button>
+                      {favorite("properties", p.id)}
                       <small>
                         <MapPin size={12} />
                         {p.city} · {p.neighborhood}
@@ -594,6 +631,12 @@ export default function Workspace({
   );
   return (
     <div className="app-shell">
+      {favorites.error && (
+        <div className="toast" role="alert">
+          {t("favoriteError")}
+          <button onClick={() => window.location.reload()}>{t("retry")}</button>
+        </div>
+      )}
       {mobile && (
         <button
           className="mobile-scrim"
@@ -1076,6 +1119,13 @@ export default function Workspace({
             page === "partner_offices") && (
             <section className="panel records-panel">
               <div className="records-toolbar">
+                <button
+                  className={`button ${onlyFavorites ? "primary" : "secondary"}`}
+                  aria-pressed={onlyFavorites}
+                  onClick={() => setOnlyFavorites(!onlyFavorites)}
+                >
+                  {t("favorites")}
+                </button>
                 <div className="search-input">
                   <Search size={18} />
                   <input
@@ -1181,6 +1231,7 @@ export default function Workspace({
                               <button onClick={() => open("properties", p.id)}>
                                 {p.title}
                               </button>
+                              {favorite("properties", p.id)}
                             </h3>
                             <p className="muted">
                               <MapPin size={14} />
@@ -1237,6 +1288,7 @@ export default function Workspace({
                               >
                                 {r.client_name}
                               </button>
+                              {favorite("client_requests", r.id)}
                               <small className="reference">{r.ref}</small>
                             </td>
                             <td>
@@ -1294,6 +1346,7 @@ export default function Workspace({
                                 >
                                   {o.name}
                                 </button>
+                                {favorite("partner_offices", o.id)}
                               </td>
                               <td>{o.address || "—"}</td>
                               <td>{o.contact_name || "—"}</td>
@@ -1330,6 +1383,7 @@ export default function Workspace({
                             >
                               {o.name}
                             </button>
+                            {favorite("partner_offices", o.id)}
                           </h3>
                           <p className="muted">
                             <MapPin size={14} />
@@ -1360,6 +1414,7 @@ export default function Workspace({
           )}
           {page === "assignments" && (
             <AssignmentPanel
+              favorites={favorites}
               data={scoped}
               profile={profile}
               t={t}

@@ -2972,3 +2972,28 @@ dialog[open] {
     gap: 16px;
   }
 }
+.favorite-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  background: var(--surface);
+  margin-inline: 6px;
+  flex-shrink: 0;
+}
+.favorite-button.selected {
+  color: #997017;
+  background: var(--peach);
+  border-color: #c6a65b;
+}
+.favorite-button:hover {
+  border-color: var(--accent);
+}
+:root[data-theme="dark"] .favorite-button.selected {
+  color: #edc879;
+}
