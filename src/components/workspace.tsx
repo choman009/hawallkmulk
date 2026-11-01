@@ -873,6 +873,38 @@ export default function Workspace({
           </div>
           {page === "dashboard" && (
             <>
+              {canCreate && (
+                <div className="quick-actions">
+                  <button
+                    className="button secondary"
+                    onClick={() => setForm({ table: "client_requests" })}
+                  >
+                    <ClipboardList size={18} />
+                    {t("addRequest")}
+                    <Plus size={15} />
+                  </button>
+                  {profile.role !== "freelancer" && (
+                    <button
+                      className="button secondary"
+                      onClick={() => setForm({ table: "partner_offices" })}
+                    >
+                      <Network size={18} />
+                      {t("addOffice")}
+                      <Plus size={15} />
+                    </button>
+                  )}
+                  {isAdmin(profile) && (
+                    <button
+                      className="button secondary"
+                      onClick={() => setAssignment(true)}
+                    >
+                      <BriefcaseBusiness size={18} />
+                      {t("addAssignment")}
+                      <Plus size={15} />
+                    </button>
+                  )}
+                </div>
+              )}
               <section className="stats-grid" aria-label={t("dashboard")}>
                 {[
                   {
