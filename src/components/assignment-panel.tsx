@@ -7,7 +7,7 @@ import { isAdmin } from "@/lib/domain";
 import type { TextKey } from "@/lib/i18n";
 import { FavoriteButton } from "./favorite-button";
 import type { useFavorites } from "@/lib/use-favorites";
-import { Modal } from "./modal";
+import { Modal, useModalClose } from "./modal";
 export function AssignmentForm({
   data,
   t,
@@ -21,6 +21,7 @@ export function AssignmentForm({
   onClose: () => void;
   target?: { type: "properties" | "client_requests"; id: string };
 }) {
+  const closeForm = useModalClose(onClose);
   const [kind, setKind] = useState(target?.type ?? "client_requests"),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
@@ -125,7 +126,7 @@ export function AssignmentForm({
         </p>
       )}
       <div className="form-actions">
-        <button type="button" className="button secondary" onClick={onClose}>
+        <button type="button" className="button secondary" onClick={closeForm}>
           {t("cancel")}
         </button>
         <button className="button primary" disabled={busy}>

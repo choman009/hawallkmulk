@@ -1187,14 +1187,7 @@ export default function Workspace({
                   {[
                     "all",
                     ...(page === "properties"
-                      ? [
-                          "available",
-                          "reserved",
-                          "sold",
-                          "rented",
-                          "withdrawn",
-                          "archived",
-                        ]
+                      ? ["archived"]
                       : ["open", "matched", "closed", "archived"]),
                   ].map((s) => (
                     <button

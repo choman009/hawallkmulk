@@ -91,6 +91,11 @@ export const en = {
   role: "Role",
   active: "Active account",
   can_write: "Allow record creation & editing",
+  discardTitle: "Unsaved changes",
+  discardMessage:
+    "You have entered information that has not been saved. Close and discard it?",
+  keepEditing: "Keep editing",
+  discardChanges: "Discard and close",
   save: "Save changes",
   saving: "Saving…",
   cancel: "Cancel",
@@ -331,6 +336,11 @@ export const ckb: Record<TextKey, string> = {
   role: "ڕۆڵ",
   active: "هەژماری چالاک",
   can_write: "ڕێگە بە زیادکردن و دەستکاریی تۆمار",
+  discardTitle: "زانیاریی پاشەکەوتنەکراو",
+  discardMessage:
+    "زانیاریت نووسیوە و هێشتا پاشەکەوت نەکراوە. دڵنیایت دەتەوێت دایبخەیت و زانیارییەکان لەدەست بدەیت؟",
+  keepEditing: "بەردەوامبوون لە نووسین",
+  discardChanges: "داخستن و فڕێدانی گۆڕانکاری",
   save: "پاشەکەوتکردن",
   saving: "پاشەکەوت دەکرێت…",
   cancel: "پاشگەزبوونەوە",

@@ -155,18 +155,18 @@ export function RecordDetail({
                 }
               }}
             >
-              {property.status === "archived" && (
-                <option value="archived" disabled>
-                  {t("archived")}
+              {[
+                "available",
+                "reserved",
+                "sold",
+                "rented",
+                "withdrawn",
+                ...(isAdmin(profile) ? ["archived"] : []),
+              ].map((status) => (
+                <option key={status} value={status}>
+                  {t(status as TextKey)}
                 </option>
-              )}
-              {["available", "reserved", "sold", "rented", "withdrawn"].map(
-                (status) => (
-                  <option key={status} value={status}>
-                    {t(status as TextKey)}
-                  </option>
-                ),
-              )}
+              ))}
             </select>
           </label>
         )}

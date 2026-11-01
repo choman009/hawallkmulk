@@ -1,5 +1,8 @@
 "use client";
 import { useState, type FormEvent } from "react";
+import { NumberInput } from "./number-input";
+import { parseNumericInput } from "@/lib/number-input";
+import { useModalClose } from "./modal";
 import { Save } from "lucide-react";
 import type { TextKey } from "@/lib/i18n";
 import type { Profile, WorkspaceData, RecordTable } from "@/lib/domain";
@@ -30,6 +33,7 @@ export function RecordForm({
   onSave: (values: Record<string, unknown>) => Promise<void>;
   onClose: () => void;
 }) {
+  const closeForm = useModalClose(onClose);
   const [busy, setBusy] = useState(false),
     [error, setError] = useState("");
   const opts = (keys: string[]) =>
@@ -135,7 +139,7 @@ export function RecordForm({
         f.type === "number"
           ? value === ""
             ? null
-            : Number(value)
+            : parseNumericInput(value)
           : ["property_id", "source_office_id"].includes(f.key)
             ? value || null
             : value;
@@ -209,6 +213,14 @@ export function RecordForm({
                 rows={3}
                 defaultValue={String(initial?.[f.key] ?? "")}
               />
+            ) : f.type === "number" ? (
+              <NumberInput
+                name={f.key}
+                defaultValue={initial?.[f.key]}
+                min={f.key.startsWith("area") ? 1 : 0}
+                integer={f.key === "bedrooms"}
+                required={f.required}
+              />
             ) : (
               <input
                 name={f.key}
@@ -252,7 +264,7 @@ export function RecordForm({
         <button
           type="button"
           className="button secondary"
-          onClick={onClose}
+          onClick={closeForm}
           disabled={busy}
         >
           {t("cancel")}

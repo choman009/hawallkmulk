@@ -3459,3 +3459,31 @@ dialog[open] {
     font-size: 16px;
   }
 }
+.discard-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: #18222d77;
+  backdrop-filter: blur(3px);
+}
+.discard-prompt {
+  max-width: 460px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 16px 50px #0003;
+}
+.discard-prompt h3 {
+  font-size: 17px;
+}
+.discard-prompt p {
+  font-size: 14px;
+}
+.discard-prompt .button-row {
+  flex-wrap: wrap;
+}
