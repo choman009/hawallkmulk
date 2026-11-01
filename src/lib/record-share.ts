@@ -1,3 +1,4 @@
+import { formatDisplayNumber } from "./number-input";
 import type { Property, ClientRequest } from "./domain";
 import type { TextKey } from "./i18n";
 export function recordShareText(
@@ -12,9 +13,7 @@ export function recordShareText(
     `${t("type")}: ${t(record.type as TextKey)}`,
   ];
   const money = (n: number | null) =>
-    n == null
-      ? "—"
-      : `${new Intl.NumberFormat("en-US").format(n)} ${record.currency}`;
+    n == null ? "—" : `${formatDisplayNumber(n)} ${record.currency}`;
   if (property) lines.push(`${t("price")}: ${money(record.price)}`);
   else
     lines.push(
@@ -24,9 +23,7 @@ export function recordShareText(
     `${t("address")}: ${[record.city, record.neighborhood, property ? record.address : ""].filter((v, i, a) => v && a.indexOf(v) === i).join(" · ")}`,
   );
   if (property && record.area != null)
-    lines.push(
-      `${t("area")}: ${new Intl.NumberFormat("en-US").format(record.area)}`,
-    );
+    lines.push(`${t("area")}: ${formatDisplayNumber(record.area)}`);
   if (!property && (record.area_min != null || record.area_max != null))
     lines.push(
       `${t("area")}: ${record.area_min ?? "—"} – ${record.area_max ?? "—"}`,

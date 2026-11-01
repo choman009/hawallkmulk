@@ -1,4 +1,6 @@
 "use client";
+import { formatDisplayNumber } from "@/lib/number-input";
+
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import {
   Building2,
@@ -499,9 +501,7 @@ export default function Workspace({
     settings: "officeSettingsSub",
   };
   const amount = (n: number | null, currency: string) =>
-    n == null
-      ? t("priceOnRequest")
-      : `${new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(n)} ${currency}`;
+    n == null ? t("priceOnRequest") : `${formatDisplayNumber(n)} ${currency}`;
   const open = (table: RecordTable, id: string) => setDetail({ table, id });
   const filterControls = (
     <div className="filters">

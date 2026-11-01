@@ -1,4 +1,6 @@
 "use client";
+import { formatDisplayNumber } from "@/lib/number-input";
+
 import { mutationErrorKey } from "@/lib/mutation-errors";
 import { useEffect, useState, useRef } from "react";
 import {
@@ -88,9 +90,7 @@ export function RecordDetail({
   }, [property?.id, data.property_images, demo, t]);
   const title = property?.title ?? request?.client_name ?? office?.name ?? "";
   const amount = (n: number | null, currency: string) =>
-    n == null
-      ? t("priceOnRequest")
-      : `${new Intl.NumberFormat("en-US").format(n)} ${currency}`;
+    n == null ? t("priceOnRequest") : `${formatDisplayNumber(n)} ${currency}`;
   const projection = data.record_sources?.find(
     (s) => s.record_id === record.id && s.record_type === table,
   );
