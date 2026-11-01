@@ -13,6 +13,7 @@ import "@fontsource/manrope/600.css";
 import "@fontsource/manrope/700.css";
 import "@fontsource/manrope/800.css";
 import "./globals.css";
+import "./notebook.css";
 export const metadata: Metadata = {
   title: "Hawall mulk",
   applicationName: "Hawall mulk",
