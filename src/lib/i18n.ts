@@ -310,7 +310,7 @@ export const ckb: Record<TextKey, string> = {
   currency: "دراو",
   area: "ڕووبەر (م²)",
   bedrooms: "ژووری نووستن",
-  title: "ناونیشانی موڵک",
+  title: "ناوی موڵک",
   description: "وردەکاری",
   contact_name: "ناوی پەیوەندی",
   notebook: "دەفتەری کار",

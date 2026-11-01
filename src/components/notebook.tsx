@@ -7,6 +7,7 @@ import {
   ArrowUpRight,
   Pin,
   Check,
+  Building2,
   X,
 } from "lucide-react";
 import type {
@@ -127,7 +128,15 @@ export function Notebook({
           neighborhood: String(fd.get("neighborhood") || "").trim(),
           budget_max: raw ? Number(raw) : null,
         });
-      else Object.assign(values, { address, price: raw ? Number(raw) : null });
+      else
+        Object.assign(values, {
+          address,
+          price: raw ? Number(raw) : null,
+          area: String(fd.get("area") || "").trim()
+            ? Number(fd.get("area"))
+            : null,
+          description: String(fd.get("description") || "").trim(),
+        });
       if (!editing)
         Object.assign(values, {
           source_contributor_id: profile.id,
@@ -297,6 +306,35 @@ export function Notebook({
                   }
                 />
               </label>
+              {!office && !request && (
+                <>
+                  <label>
+                    <span>{t("area")}</span>
+                    <input
+                      name="area"
+                      type="number"
+                      min="0.01"
+                      step="any"
+                      dir="ltr"
+                      defaultValue={
+                        editing && "area" in editing ? (editing.area ?? "") : ""
+                      }
+                    />
+                  </label>
+                  <label>
+                    <span>{t("notes")}</span>
+                    <textarea
+                      name="description"
+                      rows={2}
+                      defaultValue={
+                        editing && "description" in editing
+                          ? editing.description
+                          : ""
+                      }
+                    />
+                  </label>
+                </>
+              )}
               {request && (
                 <label>
                   <span>{t("neighborhood")}</span>
@@ -407,6 +445,9 @@ export function Notebook({
               className={`paper-note paper-${i % 4} ${isFavorite(table, r.id) ? "is-pinned" : ""}`}
               key={r.id}
             >
+              <span className="paper-spine" aria-hidden="true">
+                <Building2 size={22} />
+              </span>
               <div className="paper-meta">
                 <span>{"ref" in r ? r.ref : t("partner_offices")}</span>
                 <div>
@@ -455,6 +496,11 @@ export function Notebook({
                     )}
                   </span>
                 </div>
+              )}
+              {"area" in r && r.area != null && (
+                <span className="paper-area">
+                  <bdi>{r.area} m²</bdi>
+                </span>
               )}
               <p className="paper-address">{address(r) || "—"}</p>
               {"description" in r && r.description && (

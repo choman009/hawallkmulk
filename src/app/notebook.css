@@ -582,3 +582,414 @@
   color: #776646;
   border-bottom: 1px solid #aaa181;
 }
+/* Reference-inspired horizontal ledger cards. */
+.note-board {
+  grid-template-columns: 1fr !important;
+  gap: 12px;
+}
+.paper-note {
+  --rail: #2d6851;
+  --paper: var(--surface);
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px 20px;
+  padding-inline-start: 78px;
+  box-shadow: 0 3px 12px #24261e05;
+  filter: none !important;
+  min-height: 150px;
+}
+.paper-1 {
+  --rail: #766397;
+}
+.paper-2 {
+  --rail: #b7682e;
+}
+.paper-3 {
+  --rail: #497482;
+}
+.paper-spine {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 54px;
+  background: var(--rail);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffffdc;
+  border-start-start-radius: 11px;
+  border-end-start-radius: 11px;
+}
+.paper-meta {
+  margin-bottom: 6px;
+  color: var(--muted);
+}
+.paper-note h2 {
+  color: var(--text);
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+.paper-price {
+  justify-content: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.paper-price bdi {
+  color: var(--text);
+  font-size: 19px;
+}
+.paper-price > span,
+.paper-state,
+.paper-area {
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  padding: 3px 7px;
+  border-radius: 5px;
+  font-size: 11px;
+}
+.paper-area {
+  display: inline-block;
+  margin-bottom: 6px;
+  font-family: Manrope, sans-serif;
+}
+.paper-address,
+.paper-description {
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.paper-description {
+  border: 0;
+  padding: 0;
+  font-size: 13px;
+}
+.paper-contact {
+  display: inline-flex;
+  gap: 14px;
+  border: 0;
+  margin-inline-end: 18px;
+  padding-top: 4px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+.paper-contact > span {
+  color: var(--text);
+}
+.paper-contact .contact-button {
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+}
+.paper-meta .paper-icon,
+.paper-meta .favorite-button,
+.paper-more {
+  color: var(--muted);
+}
+.paper-meta .favorite-button.selected {
+  color: #967023;
+  background: #f2e9d1;
+}
+.paper-note.is-pinned {
+  border-top: 1px solid var(--line);
+  box-shadow: 0 0 0 1px #baa16860;
+}
+.paper-more {
+  margin-top: 8px;
+  margin-inline-start: auto;
+}
+.notebook-shell .assignment-grid {
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+.notebook-shell .assignment-card {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-inline-start: 12px solid #766397;
+  border-radius: 12px;
+  filter: none !important;
+}
+.notebook-shell .assignment-card.completed {
+  border-inline-start-color: #2d6851;
+}
+.notebook-shell .assignment-card.assigned {
+  border-inline-start-color: #b7682e;
+}
+.note-composer textarea {
+  font-size: 14px;
+  background: var(--surface-2);
+  min-height: 70px;
+  border-radius: 7px;
+}
+.sheet-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+dialog:has(.record-sheet) {
+  background: var(--surface);
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  width: min(780px, calc(100vw - 24px));
+  box-shadow: 0 20px 100px #0004;
+}
+dialog:has(.record-sheet) .dialog-header {
+  background: var(--surface);
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--line);
+}
+dialog:has(.record-sheet) .dialog-body {
+  padding: 20px 22px;
+}
+.record-sheet .detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: var(--surface-2);
+  border-radius: 10px;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+.sheet-status {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+.sheet-status span {
+  font-size: 12px;
+  color: var(--muted);
+}
+.sheet-status select {
+  min-height: 40px;
+  padding: 6px 10px;
+  background: var(--surface);
+  font-size: 13px;
+}
+.record-sheet .button {
+  min-height: 40px;
+  font-size: 12px;
+  padding: 7px 10px;
+}
+.record-sheet .property-visual {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-inline-start: 8px solid #2d6851;
+  border-radius: 10px;
+  min-height: 0;
+  padding: 18px;
+  gap: 12px;
+  box-shadow: none;
+}
+.record-sheet .property-visual > svg {
+  display: none;
+}
+.record-sheet .property-visual > span {
+  font-size: 13px;
+  color: var(--text);
+}
+.record-sheet .property-visual .offer-badge {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-size: 12px;
+}
+.record-sheet .property-visual > b {
+  font-size: 25px;
+  color: var(--text);
+}
+.record-sheet .detail-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-block: 12px;
+}
+.record-sheet .detail-facts > span {
+  background: transparent;
+  border: 1px solid var(--line);
+  padding: 9px 12px;
+  flex: 1;
+  min-width: 140px;
+  color: var(--text);
+  font-size: 13px;
+}
+.record-sheet .contact-section {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-inline-start: 8px solid #766397;
+  padding: 16px;
+  border-radius: 10px;
+  margin-block: 16px;
+}
+.record-sheet .contact-section h3 {
+  font-size: 15px;
+  color: var(--text);
+}
+.record-sheet .contact-section .phone-text {
+  color: var(--text);
+  font-size: 14px;
+}
+.record-sheet .info-grid {
+  border-block: 1px solid var(--line);
+  padding-block: 12px;
+  margin-block: 16px;
+}
+.record-sheet .info-grid > div {
+  background: transparent;
+  padding: 4px 8px;
+}
+.record-sheet .detail-description {
+  border: 1px solid var(--line);
+  border-inline-start: 5px solid #b7682e;
+  border-radius: 8px;
+  padding: 12px;
+  background: var(--surface-2);
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.9;
+}
+.record-sheet .detail-section {
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+  margin-top: 16px;
+}
+.record-sheet .form-actions {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+:root[data-theme="dark"] .notebook-shell {
+  --bg: #151b22;
+  --surface: #202a35;
+  --surface-2: #293645;
+  --text: #f2f5fa;
+  --muted: #b5c2d2;
+  --line: #3a4a5d;
+}
+:root[data-theme="dark"] .notebook-shell .sidebar {
+  background: #19222d;
+  color: #f2f5fa;
+}
+:root[data-theme="dark"] .notebook-shell .sidebar .nav-item {
+  color: #c9d4e3;
+}
+:root[data-theme="dark"] .notebook-shell .sidebar .nav-item.active {
+  background: #3b405e;
+  color: #fff;
+}
+:root[data-theme="dark"] .notebook-heading h1 {
+  color: var(--text);
+}
+:root[data-theme="dark"] .notebook-heading h1 > span {
+  background: #344353;
+  color: #e0e8f3;
+}
+:root[data-theme="dark"] .notebook-shell .sidebar .profile-chip,
+:root[data-theme="dark"] .note-composer input,
+:root[data-theme="dark"] .note-composer select,
+:root[data-theme="dark"] .note-composer textarea {
+  background: var(--surface-2);
+  color: var(--text);
+}
+:root[data-theme="dark"] .paper-meta .favorite-button.selected {
+  background: #594c2d;
+  color: #ffe199;
+}
+:root[data-theme="dark"] .note-filter.active {
+  background: #47415e;
+  color: #fff;
+  border-color: #796895;
+}
+@media (max-width: 760px) {
+  .paper-note {
+    padding: 12px;
+    padding-inline-start: 58px;
+    border-radius: 10px;
+  }
+  .paper-spine {
+    width: 40px;
+  }
+  .paper-note h2 {
+    font-size: 15px;
+  }
+  .paper-price {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .paper-contact {
+    display: flex;
+    margin-inline-end: 0;
+    justify-content: space-between;
+  }
+  .note-composer textarea {
+    font-size: 16px;
+    grid-column: 1/-1;
+  }
+  dialog:has(.record-sheet) .dialog-header {
+    padding: 12px 14px;
+  }
+  dialog:has(.record-sheet) .dialog-body {
+    padding: 14px;
+  }
+  .record-sheet .contact-section {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 12px;
+  }
+  .record-sheet .detail-facts > span {
+    min-width: 110px;
+    padding: 8px;
+    font-size: 12px;
+  }
+  .sheet-heading {
+    display: none;
+  }
+  .sheet-status {
+    flex: 1;
+  }
+  .sheet-status select {
+    font-size: 16px;
+    min-height: 44px;
+  }
+  .record-sheet .property-visual {
+    padding: 12px;
+  }
+  .record-sheet .property-visual > b {
+    font-size: 22px;
+  }
+}
+@media (min-width: 761px) {
+  .note-composer {
+    max-height: calc(100dvh - 36px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+}
+.note-composer label:has(textarea) {
+  grid-column: 1/-1;
+}
+.record-sheet .sheet-heading strong {
+  font-size: 14px;
+  max-width: 65%;
+  text-align: end;
+}
+:root[data-theme="dark"] .composer-heading {
+  color: #d6c5ee;
+}
+:root[data-theme="dark"] .record-sheet .sheet-heading {
+  color: var(--muted);
+}

@@ -795,6 +795,7 @@ export default function Workspace({
               id: record.id,
             })
           }
+          onStatusChange={(status) => save(detail.table, { status }, record.id)}
           onArchive={() =>
             save(detail.table, { status: "archived" }, record.id)
           }
