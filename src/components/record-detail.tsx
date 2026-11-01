@@ -26,6 +26,7 @@ import { matchingProperties } from "@/lib/matching";
 import { photoUrls, uploadPhoto } from "@/lib/repository";
 import { getBrowserClient } from "@/lib/supabase/client";
 import type { TextKey } from "@/lib/i18n";
+import { ShareRecord } from "./share-record";
 import { ContactActions } from "./contact-actions";
 import { Modal } from "./modal";
 export function RecordDetail({
@@ -130,20 +131,26 @@ export function RecordDetail({
           )}
           {"status" in record && (
             <span className={`status ${record.status}`}>
-              {t(record.status as TextKey)}
+              {t(record.status === "archived" ? "archived" : "all")}
             </span>
           )}
         </div>
-        {property && editable && profile.role !== "freelancer" && (
+        {(property || request) && editable && profile.role !== "freelancer" && (
           <label className="detail-status-control">
             <span>{t("status")}</span>
             <select
               aria-label={t("status")}
-              value={property.status}
+              value={
+                record && "status" in record && record.status === "archived"
+                  ? "archived"
+                  : property
+                    ? "available"
+                    : "open"
+              }
               disabled={busy}
               onChange={async (event) => {
                 const status = event.target.value;
-                if (status === property.status) return;
+                if ("status" in record && status === record.status) return;
                 setBusy(true);
                 setError("");
                 try {
@@ -156,21 +163,20 @@ export function RecordDetail({
               }}
             >
               {[
-                "available",
-                "reserved",
-                "sold",
-                "rented",
-                "withdrawn",
+                property ? "available" : "open",
                 ...(isAdmin(profile) ? ["archived"] : []),
               ].map((status) => (
                 <option key={status} value={status}>
-                  {t(status as TextKey)}
+                  {t(status === "archived" ? "archived" : "all")}
                 </option>
               ))}
             </select>
           </label>
         )}
         <div className="button-row">
+          {(property || request) && (
+            <ShareRecord record={(property || request)!} t={t} />
+          )}
           {editable && (
             <button className="button secondary small-button" onClick={onEdit}>
               <Pencil size={14} />
@@ -290,7 +296,9 @@ export function RecordDetail({
           <span className="phone-text" dir="ltr">
             {record.phone}
           </span>
-          {(property?.phone_secondary ?? office?.phone_secondary) && (
+          {(property?.phone_secondary ??
+            request?.phone_secondary ??
+            office?.phone_secondary) && (
             <div>
               <small className="muted">{t("phone_secondary")}</small>
               <p className="phone-text" dir="ltr">

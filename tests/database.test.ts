@@ -82,6 +82,44 @@ test("PostgreSQL migration enforces own/assigned scope, progress, revocation, pr
     );
     await db.exec(deletionMigration);
     await db.exec(deletionMigration);
+    const requestPhoneMigration = await readFile(
+      new URL(
+        "../supabase/migrations/202611010002_request_phone.sql",
+        import.meta.url,
+      ),
+      "utf8",
+    );
+    await db.exec(requestPhoneMigration);
+    await db.exec(requestPhoneMigration);
+    await t.test(
+      "request second phone persists, clears and rejects invalid input",
+      async () => {
+        assert.equal(
+          (
+            await asUser<{ phone_secondary: string }>(
+              ids.owner,
+              `update public.client_requests set phone_secondary='+9647701234567' where id='${ids.r1}' returning phone_secondary`,
+            )
+          ).rows[0].phone_secondary,
+          "+9647701234567",
+        );
+        assert.equal(
+          (
+            await asUser<{ phone_secondary: null }>(
+              ids.owner,
+              `update public.client_requests set phone_secondary=null where id='${ids.r1}' returning phone_secondary`,
+            )
+          ).rows[0].phone_secondary,
+          null,
+        );
+        await assert.rejects(() =>
+          asUser(
+            ids.owner,
+            `update public.client_requests set phone_secondary='bad' where id='${ids.r1}'`,
+          ),
+        );
+      },
+    );
     await t.test(
       "optional secondary phones persist, clear and reject invalid values without replacing the primary",
       async () => {

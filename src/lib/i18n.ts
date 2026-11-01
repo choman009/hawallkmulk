@@ -74,6 +74,7 @@ export const en = {
   removeFavorite: "Remove from favorites",
   favoriteError:
     "Could not save or load favorites. Check your connection and that the favorites SQL update is applied.",
+  shareWhatsApp: "Share details via WhatsApp",
   phone: "Phone number",
   phone_secondary: "Second phone number",
   source_contributor_id: "Contributor",
@@ -319,6 +320,7 @@ export const ckb: Record<TextKey, string> = {
   removeFavorite: "لابردن لە دڵخواز",
   favoriteError:
     "دڵخوازەکان بار یان پاشەکەوت نەکران. پەیوەندی ئینتەرنێت و جێبەجێکردنی SQLی دڵخواز بپشکنە.",
+  shareWhatsApp: "ناردنی زانیاری بۆ واتسئەپ",
   phone: "ژمارەی مۆبایل",
   phone_secondary: "ژمارەی مۆبایلی دووەم",
   source_contributor_id: "هێنەری تۆمار",

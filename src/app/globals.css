@@ -3487,3 +3487,13 @@ dialog[open] {
 .discard-prompt .button-row {
   flex-wrap: wrap;
 }
+.share-record {
+  display: inline-flex;
+  vertical-align: middle;
+  margin-inline: 4px;
+  max-width: 100%;
+  color: var(--green);
+}
+.detail-actions .button-row {
+  flex-wrap: wrap;
+}

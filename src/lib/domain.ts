@@ -39,6 +39,7 @@ export type ClientRequest = {
   ref: string;
   client_name: string;
   phone: string;
+  phone_secondary?: string | null;
   kind: string;
   type: string;
   city: string;
@@ -179,7 +180,7 @@ export function validateRecord(
   )
     errors.push("required");
   if (!normalizePhone(String(data.phone ?? ""))) errors.push("phone");
-  if (table !== "client_requests") {
+  {
     const secondary = String(data.phone_secondary ?? "").trim();
     if (secondary && !normalizePhone(secondary)) errors.push("phone_secondary");
   }

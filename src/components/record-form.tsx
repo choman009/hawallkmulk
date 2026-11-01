@@ -61,6 +61,7 @@ export function RecordForm({
   const requestFields: Field[] = [
     { key: "client_name", required: true },
     { key: "phone", type: "tel", required: true },
+    { key: "phone_secondary", type: "tel" },
     { key: "kind", options: opts(["buy", "rent", "sell"]), required: true },
     {
       key: "type",
@@ -120,12 +121,20 @@ export function RecordForm({
     if (initial)
       fields.push({
         key: "status",
-        options: opts([
-          ...(table === "properties"
-            ? ["available", "reserved", "sold", "rented", "withdrawn"]
-            : ["open", "matched", "closed"]),
-          ...(isAdmin(profile) ? ["archived"] : []),
-        ]),
+        options: [
+          {
+            value:
+              initial.status === "archived"
+                ? table === "properties"
+                  ? "available"
+                  : "open"
+                : String(initial.status),
+            label: t("all"),
+          },
+          ...(isAdmin(profile)
+            ? [{ value: "archived", label: t("archived") }]
+            : []),
+        ],
       });
   }
   async function submit(e: FormEvent<HTMLFormElement>) {
@@ -145,7 +154,7 @@ export function RecordForm({
             : value;
     }
     values.phone = normalizePhone(String(values.phone)) ?? String(values.phone);
-    if (table !== "client_requests") {
+    {
       const secondary = String(values.phone_secondary ?? "").trim();
       if (secondary)
         values.phone_secondary = normalizePhone(secondary) ?? secondary;

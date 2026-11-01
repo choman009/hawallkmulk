@@ -125,3 +125,8 @@ If a save reports a database update requirement, check these files succeeded aga
 
 ## Personal favorites
 Apply `supabase/migrations/202611010001_favorites.sql` after the existing migrations. Favorites belong to each authenticated account and synchronize across devices. Stars never grant access to a record; lists still use existing record visibility policies. Each section has a Favorites filter and sorts visible favorites first. Demo favorites are stored per demo profile in this browser only.
+
+## Request second phone and WhatsApp sharing
+Apply `supabase/migrations/202611010002_request_phone.sql` to the existing Supabase project. The update adds an optional second request phone and its format constraint and can be repeated. Blank new values are omitted; clearing an existing second phone writes null. Do not rerun the initial migration.
+
+Property/request status controls now offer All and Archived (archive remains administrator-only). Existing non-archived historical statuses remain in storage and are grouped under All. WhatsApp share links prepare a structured draft containing the selected record's visible details and phone numbers. The user chooses a recipient and sends it in WhatsApp; opening a draft does not send it automatically.

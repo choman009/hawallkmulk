@@ -59,6 +59,7 @@ import {
   deleteRecord,
   DEMO_KEY,
 } from "@/lib/repository";
+import { ShareRecord } from "./share-record";
 import { ContactActions } from "./contact-actions";
 import { useFavorites } from "@/lib/use-favorites";
 import { FavoriteButton } from "./favorite-button";
@@ -442,9 +443,14 @@ export default function Workspace({
     .filter((r) => type === "all" || r.type === type)
     .filter((r) => purpose === "all" || r.kind === purpose)
     .filter((r) =>
-      [r.client_name, r.ref, r.city, r.neighborhood, r.phone].some((v) =>
-        v.toLocaleLowerCase().includes(query.toLocaleLowerCase()),
-      ),
+      [
+        r.client_name,
+        r.ref,
+        r.city,
+        r.neighborhood,
+        r.phone,
+        r.phone_secondary ?? "",
+      ].some((v) => v.toLocaleLowerCase().includes(query.toLocaleLowerCase())),
     );
   const offices = scoped.partner_offices
     .filter((o) => !onlyFavorites || favorites.has("partner_offices", o.id))
@@ -569,6 +575,7 @@ export default function Workspace({
                         {p.title}
                       </button>
                       {favorite("properties", p.id)}
+                      <ShareRecord record={p} t={t} compact />
                       <small>
                         <MapPin size={12} />
                         {p.city} · {p.neighborhood}
@@ -591,7 +598,7 @@ export default function Workspace({
                 </td>
                 <td data-label={t("status")}>
                   <span className={`status ${p.status}`}>
-                    {t(p.status as TextKey)}
+                    {t(p.status === "archived" ? "archived" : "all")}
                   </span>
                 </td>
                 <td data-label={t("contact")}>
@@ -1184,12 +1191,7 @@ export default function Workspace({
               </div>
               {page !== "partner_offices" && (
                 <div className="tabs status-tabs">
-                  {[
-                    "all",
-                    ...(page === "properties"
-                      ? ["archived"]
-                      : ["open", "matched", "closed", "archived"]),
-                  ].map((s) => (
+                  {["all", "archived"].map((s) => (
                     <button
                       key={s}
                       className={status === s ? "active" : ""}
@@ -1225,7 +1227,7 @@ export default function Workspace({
                             aria-label={`${t("details")} ${p.title}`}
                           >
                             <span className={`status ${p.status}`}>
-                              {t(p.status as TextKey)}
+                              {t(p.status === "archived" ? "archived" : "all")}
                             </span>
                             <div className="building-art">
                               <Building2 size={85} strokeWidth={0.8} />
@@ -1241,6 +1243,7 @@ export default function Workspace({
                                 {p.title}
                               </button>
                               {favorite("properties", p.id)}
+                              <ShareRecord record={p} t={t} compact />
                             </h3>
                             <p className="muted">
                               <MapPin size={14} />
@@ -1298,6 +1301,7 @@ export default function Workspace({
                                 {r.client_name}
                               </button>
                               {favorite("client_requests", r.id)}
+                              <ShareRecord record={r} t={t} compact />
                               <small className="reference">{r.ref}</small>
                             </td>
                             <td data-label={t("kind")}>
@@ -1315,11 +1319,18 @@ export default function Workspace({
                             </td>
                             <td data-label={t("status")}>
                               <span className={`status ${r.status}`}>
-                                {t(r.status as TextKey)}
+                                {t(
+                                  r.status === "archived" ? "archived" : "all",
+                                )}
                               </span>
                             </td>
                             <td data-label={t("contact")}>
-                              <ContactActions phone={r.phone} t={t} compact />
+                              <ContactActions
+                                phone={r.phone}
+                                secondaryPhone={r.phone_secondary}
+                                t={t}
+                                compact
+                              />
                             </td>
                           </tr>
                         ))}
