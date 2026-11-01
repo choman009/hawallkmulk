@@ -1564,6 +1564,7 @@ export default function Workspace({
           onArchive={() =>
             save(detail.table, { status: "archived" }, record.id)
           }
+          onStatusChange={(status) => save(detail.table, { status }, record.id)}
           onDelete={() =>
             requestDelete(
               detail.table,

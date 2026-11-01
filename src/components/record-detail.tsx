@@ -39,6 +39,7 @@ export function RecordDetail({
   onEdit,
   onAssign,
   onArchive,
+  onStatusChange,
   onDelete,
   onRefresh,
   onOpen,
@@ -53,6 +54,7 @@ export function RecordDetail({
   onEdit: () => void;
   onAssign: () => void;
   onArchive: () => Promise<void>;
+  onStatusChange: (status: string) => Promise<void>;
   onDelete: () => void;
   onRefresh: () => Promise<void>;
   onOpen: (id: string) => void;
@@ -132,6 +134,42 @@ export function RecordDetail({
             </span>
           )}
         </div>
+        {property && editable && profile.role !== "freelancer" && (
+          <label className="detail-status-control">
+            <span>{t("status")}</span>
+            <select
+              aria-label={t("status")}
+              value={property.status}
+              disabled={busy}
+              onChange={async (event) => {
+                const status = event.target.value;
+                if (status === property.status) return;
+                setBusy(true);
+                setError("");
+                try {
+                  await onStatusChange(status);
+                } catch (error) {
+                  setError(t(mutationErrorKey(error)));
+                } finally {
+                  setBusy(false);
+                }
+              }}
+            >
+              {property.status === "archived" && (
+                <option value="archived" disabled>
+                  {t("archived")}
+                </option>
+              )}
+              {["available", "reserved", "sold", "rented", "withdrawn"].map(
+                (status) => (
+                  <option key={status} value={status}>
+                    {t(status as TextKey)}
+                  </option>
+                ),
+              )}
+            </select>
+          </label>
+        )}
         <div className="button-row">
           {editable && (
             <button className="button secondary small-button" onClick={onEdit}>
