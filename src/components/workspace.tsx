@@ -542,7 +542,7 @@ export default function Workspace({
   function PropertyTable({ items }: { items: Property[] }) {
     return (
       <div className="table-wrap">
-        <table>
+        <table className="compact-records property-records">
           <thead>
             <tr>
               <th>{t("property")}</th>
@@ -556,7 +556,7 @@ export default function Workspace({
           <tbody>
             {items.map((p) => (
               <tr key={p.id}>
-                <td>
+                <td data-label={t("property")}>
                   <div className="property-cell">
                     <span className={`property-thumb ${p.type}`}>
                       <Building2 size={26} strokeWidth={1.4} />
@@ -577,24 +577,24 @@ export default function Workspace({
                     </div>
                   </div>
                 </td>
-                <td>
+                <td data-label={t("type")}>
                   <span className="type-label">{t(p.type as TextKey)}</span>
                 </td>
-                <td>
+                <td data-label={t("price")}>
                   <strong className="amount" dir="ltr">
                     {amount(p.price, p.currency)}
                   </strong>
                   <small>{t(p.purpose as TextKey)}</small>
                 </td>
-                <td>
+                <td data-label={t("area")}>
                   <bdi>{p.area ?? "—"} m²</bdi>
                 </td>
-                <td>
+                <td data-label={t("status")}>
                   <span className={`status ${p.status}`}>
                     {t(p.status as TextKey)}
                   </span>
                 </td>
-                <td>
+                <td data-label={t("contact")}>
                   <ContactActions
                     phone={p.phone}
                     secondaryPhone={p.phone_secondary}
@@ -1144,7 +1144,23 @@ export default function Workspace({
                     </button>
                   )}
                 </div>
-                {page !== "partner_offices" && filterControls}
+                {page !== "partner_offices" &&
+                  (narrow ? (
+                    <details className="compact-filter">
+                      <summary>
+                        <SlidersHorizontal size={16} />
+                        {t("filters")}
+                        {(type !== "all" || purpose !== "all") && (
+                          <span className="count">
+                            {Number(type !== "all") + Number(purpose !== "all")}
+                          </span>
+                        )}
+                      </summary>
+                      {filterControls}
+                    </details>
+                  ) : (
+                    filterControls
+                  ))}
                 {(page === "properties" || page === "partner_offices") && (
                   <div className="view-toggle">
                     <button
@@ -1267,7 +1283,7 @@ export default function Workspace({
               {page === "client_requests" &&
                 (requests.length ? (
                   <div className="table-wrap">
-                    <table>
+                    <table className="compact-records">
                       <thead>
                         <tr>
                           <th>{t("client_name")}</th>
@@ -1281,7 +1297,7 @@ export default function Workspace({
                       <tbody>
                         {requests.map((r) => (
                           <tr key={r.id}>
-                            <td>
+                            <td data-label={t("client_name")}>
                               <button
                                 className="row-title"
                                 onClick={() => open("client_requests", r.id)}
@@ -1291,25 +1307,25 @@ export default function Workspace({
                               {favorite("client_requests", r.id)}
                               <small className="reference">{r.ref}</small>
                             </td>
-                            <td>
+                            <td data-label={t("kind")}>
                               {t(r.kind as TextKey)} · {t(r.type as TextKey)}
                             </td>
-                            <td>
+                            <td data-label={t("location")}>
                               {r.city}
                               <small>{r.neighborhood}</small>
                             </td>
-                            <td>
+                            <td data-label={t("budget")}>
                               <bdi>
                                 {amount(r.budget_min, r.currency)} —{" "}
                                 {amount(r.budget_max, r.currency)}
                               </bdi>
                             </td>
-                            <td>
+                            <td data-label={t("status")}>
                               <span className={`status ${r.status}`}>
                                 {t(r.status as TextKey)}
                               </span>
                             </td>
-                            <td>
+                            <td data-label={t("contact")}>
                               <ContactActions phone={r.phone} t={t} compact />
                             </td>
                           </tr>
@@ -1326,7 +1342,7 @@ export default function Workspace({
                 ) : offices.length ? (
                   view === "table" ? (
                     <div className="table-wrap">
-                      <table>
+                      <table className="compact-records">
                         <thead>
                           <tr>
                             <th>{t("name")}</th>
@@ -1339,7 +1355,7 @@ export default function Workspace({
                         <tbody>
                           {offices.map((o) => (
                             <tr key={o.id}>
-                              <td>
+                              <td data-label={t("name")}>
                                 <button
                                   className="row-title"
                                   onClick={() => open("partner_offices", o.id)}
@@ -1348,15 +1364,19 @@ export default function Workspace({
                                 </button>
                                 {favorite("partner_offices", o.id)}
                               </td>
-                              <td>{o.address || "—"}</td>
-                              <td>{o.contact_name || "—"}</td>
-                              <td>
+                              <td data-label={t("address")}>
+                                {o.address || "—"}
+                              </td>
+                              <td data-label={t("contact_name")}>
+                                {o.contact_name || "—"}
+                              </td>
+                              <td data-label={t("phone")}>
                                 <div dir="ltr">{o.phone}</div>
                                 {o.phone_secondary && (
                                   <div dir="ltr">{o.phone_secondary}</div>
                                 )}
                               </td>
-                              <td>
+                              <td data-label={t("contact")}>
                                 <ContactActions
                                   phone={o.phone}
                                   secondaryPhone={o.phone_secondary}
