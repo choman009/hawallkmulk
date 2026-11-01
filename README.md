@@ -125,8 +125,3 @@ If a save reports a database update requirement, check these files succeeded aga
 
 ## Personal favorites
 Apply `supabase/migrations/202611010001_favorites.sql` after the existing migrations. Favorites belong to each authenticated account and synchronize across devices. Stars never grant access to a record; lists still use existing record visibility policies. Each section has a Favorites filter and sorts visible favorites first. Demo favorites are stored per demo profile in this browser only.
-
-## Notebook workspace
-The primary workspace is a notebook with visible title, price/budget, address, phone numbers and contact links. Desktop has a persistent quick-entry panel; mobile opens the same form inline. Favorites pin records to the top. Search accepts Iraqi local/international phone formats and Kurdish digits. Existing detailed record actions, roles, private images, assignment workflows and administrative settings remain available.
-
-Quick property entry accepts a single freeform address; existing structured city/neighborhood are preserved on edits. New records use that address as the required city baseline; use the detailed editor to refine structured location for precise property matching. Requests retain separate city and neighborhood fields. No database migration is needed for this UI replacement.
