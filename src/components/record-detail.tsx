@@ -87,7 +87,7 @@ export function RecordDetail({
   const amount = (n: number | null, currency: string) =>
     n == null
       ? t("priceOnRequest")
-      : `${new Intl.NumberFormat().format(n)} ${currency}`;
+      : `${new Intl.NumberFormat("en-US").format(n)} ${currency}`;
   const projection = data.record_sources?.find(
     (s) => s.record_id === record.id && s.record_type === table,
   );
@@ -150,9 +150,15 @@ export function RecordDetail({
       {property && (
         <>
           <div className={`property-visual ${property.type}`}>
-            <Building2 size={68} strokeWidth={1} />
+            <Building2 size={32} strokeWidth={1.5} />
             <span>{t(property.type as TextKey)}</span>
-            <b>{amount(property.price, property.currency)}</b>
+            <span className="offer-badge">
+              {t(property.purpose as TextKey)}
+            </span>
+            <b>
+              <small>{t("price")}</small>
+              <bdi>{amount(property.price, property.currency)}</bdi>
+            </b>
           </div>
           <div className="detail-facts">
             <span>
@@ -160,12 +166,11 @@ export function RecordDetail({
               {property.city} · {property.neighborhood}
             </span>
             <span>
-              <Scan size={17} />
-              {property.area ?? "—"} m²
+              <Scan size={17} /> {t("area")}:<bdi>{property.area ?? "—"}</bdi>
             </span>
             <span>
-              <BedDouble size={17} />
-              {property.bedrooms ?? "—"}
+              <BedDouble size={17} /> {t("bedrooms")}:
+              <bdi>{property.bedrooms ?? "—"}</bdi>
             </span>
           </div>
           {property.address && <p>{property.address}</p>}
@@ -182,7 +187,10 @@ export function RecordDetail({
             </span>
             <div>
               <h3>
-                {t(request.kind as TextKey)} · {t(request.type as TextKey)}
+                <span className="offer-badge">
+                  {t(request.kind as TextKey)}
+                </span>{" "}
+                {t(request.type as TextKey)}
               </h3>
               <p>
                 {request.city} · {request.neighborhood}
@@ -267,7 +275,9 @@ export function RecordDetail({
           </div>
           <div>
             <small>{t("created")}</small>
-            <strong>{new Date(record.created_at).toLocaleDateString()}</strong>
+            <strong>
+              {new Date(record.created_at).toLocaleDateString("en-GB")}
+            </strong>
           </div>
         </div>
       )}

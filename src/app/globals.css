@@ -2877,3 +2877,98 @@ dialog[open] {
     justify-content: center;
   }
 }
+/* Compact record overview: purpose, price, location, then contact. */
+.property-visual {
+  min-height: 100px;
+  padding: 20px;
+  gap: 14px;
+  flex-wrap: wrap;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  margin-bottom: 18px;
+}
+.property-visual > svg {
+  color: var(--muted);
+  opacity: 1;
+}
+.property-visual > b {
+  margin-inline-start: auto;
+  font-size: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.property-visual > b > small {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.offer-badge {
+  display: inline-flex;
+  align-items: center;
+  background: var(--nav);
+  color: var(--nav-text);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.8;
+}
+.detail-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.detail-facts > span {
+  background: var(--surface-2);
+  padding: 12px;
+  border-radius: 10px;
+  line-height: 1.9;
+  flex-wrap: wrap;
+}
+.request-summary {
+  background: var(--surface-2);
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.request-summary h3 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.contact-section {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px;
+}
+.info-grid {
+  gap: 12px;
+  margin-block: 18px;
+}
+.info-grid > div {
+  background: var(--surface-2);
+  padding: 14px;
+  border-radius: 10px;
+}
+.detail-description {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  border-inline-start: 3px solid var(--accent);
+  padding-inline-start: 14px;
+}
+@media (max-width: 760px) {
+  .detail-facts {
+    grid-template-columns: 1fr;
+  }
+  .property-visual > b {
+    font-size: 22px;
+  }
+  .contact-section {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+}

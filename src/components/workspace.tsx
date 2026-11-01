@@ -216,6 +216,7 @@ export default function Workspace({
   }, [demo, profile?.id, refresh]);
   function navigate(next: Page) {
     setPage(next);
+    setView("table");
     setQuery("");
     setStatus("all");
     setType("all");
@@ -458,7 +459,7 @@ export default function Workspace({
   const amount = (n: number | null, currency: string) =>
     n == null
       ? t("priceOnRequest")
-      : `${new Intl.NumberFormat(locale === "ckb" ? "ar-IQ" : "en-US", { maximumFractionDigits: 0 }).format(n)} ${currency}`;
+      : `${new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(n)} ${currency}`;
   const open = (table: RecordTable, id: string) => setDetail({ table, id });
   const filterControls = (
     <div className="filters">
@@ -834,10 +835,10 @@ export default function Workspace({
                 <>
                   <span className="date-label">
                     <span className="tiny-dot green" />
-                    {new Intl.DateTimeFormat(
-                      locale === "ckb" ? "ar-IQ" : "en-GB",
-                      { dateStyle: "medium", timeZone: "Asia/Baghdad" },
-                    ).format(new Date())}
+                    {new Intl.DateTimeFormat("en-GB", {
+                      dateStyle: "medium",
+                      timeZone: "Asia/Baghdad",
+                    }).format(new Date())}
                   </span>
                   {canCreate && (
                     <button
@@ -1094,7 +1095,7 @@ export default function Workspace({
                   )}
                 </div>
                 {page !== "partner_offices" && filterControls}
-                {page === "properties" && (
+                {(page === "properties" || page === "partner_offices") && (
                   <div className="view-toggle">
                     <button
                       className={view === "table" ? "active" : ""}
@@ -1271,41 +1272,87 @@ export default function Workspace({
                 (profile.role === "freelancer" ? (
                   <div className="empty">{t("noAccess")}</div>
                 ) : offices.length ? (
-                  <div className="office-grid">
-                    {offices.map((o) => (
-                      <article className="office-card" key={o.id}>
-                        <span className="office-card-icon">
-                          <Building2 size={23} />
-                        </span>
-                        <h3>
-                          <button
-                            className="row-title"
-                            onClick={() => open("partner_offices", o.id)}
-                          >
-                            {o.name}
-                          </button>
-                        </h3>
-                        <p className="muted">
-                          <MapPin size={14} />
-                          {o.address}
-                        </p>
-                        <p>{o.contact_name}</p>
-                        <span className="phone-text" dir="ltr">
-                          {o.phone}
-                        </span>
-                        {o.phone_secondary && (
-                          <span className="phone-text" dir="ltr">
-                            {o.phone_secondary}
+                  view === "table" ? (
+                    <div className="table-wrap">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>{t("name")}</th>
+                            <th>{t("address")}</th>
+                            <th>{t("contact_name")}</th>
+                            <th>{t("phone")}</th>
+                            <th>{t("contact")}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {offices.map((o) => (
+                            <tr key={o.id}>
+                              <td>
+                                <button
+                                  className="row-title"
+                                  onClick={() => open("partner_offices", o.id)}
+                                >
+                                  {o.name}
+                                </button>
+                              </td>
+                              <td>{o.address || "—"}</td>
+                              <td>{o.contact_name || "—"}</td>
+                              <td>
+                                <div dir="ltr">{o.phone}</div>
+                                {o.phone_secondary && (
+                                  <div dir="ltr">{o.phone_secondary}</div>
+                                )}
+                              </td>
+                              <td>
+                                <ContactActions
+                                  phone={o.phone}
+                                  secondaryPhone={o.phone_secondary}
+                                  t={t}
+                                  compact
+                                />
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <div className="office-grid">
+                      {offices.map((o) => (
+                        <article className="office-card" key={o.id}>
+                          <span className="office-card-icon">
+                            <Building2 size={23} />
                           </span>
-                        )}
-                        <ContactActions
-                          phone={o.phone}
-                          secondaryPhone={o.phone_secondary}
-                          t={t}
-                        />
-                      </article>
-                    ))}
-                  </div>
+                          <h3>
+                            <button
+                              className="row-title"
+                              onClick={() => open("partner_offices", o.id)}
+                            >
+                              {o.name}
+                            </button>
+                          </h3>
+                          <p className="muted">
+                            <MapPin size={14} />
+                            {o.address}
+                          </p>
+                          <p>{o.contact_name}</p>
+                          <span className="phone-text" dir="ltr">
+                            {o.phone}
+                          </span>
+                          {o.phone_secondary && (
+                            <span className="phone-text" dir="ltr">
+                              {o.phone_secondary}
+                            </span>
+                          )}
+                          <ContactActions
+                            phone={o.phone}
+                            secondaryPhone={o.phone_secondary}
+                            t={t}
+                          />
+                        </article>
+                      ))}
+                    </div>
+                  )
                 ) : (
                   empty
                 ))}

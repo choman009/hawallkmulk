@@ -335,7 +335,7 @@ export function AssignmentPanel({
                   </strong>
                   <p>{u.note}</p>
                   <small className="muted">
-                    {new Date(u.created_at).toLocaleString()}
+                    {new Date(u.created_at).toLocaleString("en-GB")}
                   </small>
                 </div>
               ))}
